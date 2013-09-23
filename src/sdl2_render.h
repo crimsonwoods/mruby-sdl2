@@ -3,6 +3,13 @@
 
 #include "sdl2.h"
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_rect.h>
+
+typedef struct pixelbuf_data_t {
+  SDL_Rect rect;
+  void    *pixels;
+  int      pitch;
+} pixelbuf_data_t;
 
 extern SDL_Renderer *mrb_sdl2_video_renderer_get_ptr(mrb_state *mrb, mrb_value renderer);
 

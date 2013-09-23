@@ -20,9 +20,7 @@ typedef struct mrb_sdl2_video_texture_data_t {
 } mrb_sdl2_video_texture_data_t;
 
 typedef struct mrb_sdl2_video_pixelbuf_data_t {
-  SDL_Rect rect;
-  void    *pixels;
-  int      pitch;
+  pixelbuf_data_t data;
 } mrb_sdl2_video_pixelbuf_data_t;
 
 typedef struct mrb_sdl2_video_rendererinfo_data_t {
@@ -122,6 +120,17 @@ mrb_sdl2_video_rendererinfo_get_ptr(mrb_state *mrb, mrb_value info)
   mrb_sdl2_video_rendererinfo_data_t *data =
     (mrb_sdl2_video_rendererinfo_data_t*)mrb_data_get_ptr(mrb, info, &mrb_sdl2_video_rendererinfo_data_type);
   return &data->info;
+}
+
+pixelbuf_data_t *
+mrb_sdl2_video_pixelbuf_get_ptr(mrb_state *mrb, mrb_value pbuf)
+{
+  if (mrb_nil_p(pbuf)) {
+    return NULL;
+  }
+  mrb_sdl2_video_pixelbuf_data_t *data =
+    (mrb_sdl2_video_pixelbuf_data_t*)mrb_data_get_ptr(mrb, pbuf, &mrb_sdl2_video_pixelbuf_data_type);
+  return &data->data;
 }
 
 mrb_value
@@ -527,29 +536,45 @@ mrb_sdl2_video_renderer_fill_rects(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_sdl2_video_renderer_get_clip_rect(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Renderer *renderer = mrb_sdl2_video_renderer_get_ptr(mrb, self);
+  SDL_Rect rect;
+  SDL_RenderGetClipRect(renderer, &rect);
+  return mrb_sdl2_rect(mrb, rect.x, rect.y, rect.w, rect.h);
 }
 
 static mrb_value
 mrb_sdl2_video_renderer_set_clip_rect(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Renderer *renderer = mrb_sdl2_video_renderer_get_ptr(mrb, self);
+  mrb_value arg;
+  mrb_get_args(mrb, "o", &arg);
+  SDL_Rect const * const rect = mrb_sdl2_rect_get_ptr(mrb, arg);
+  if (0 != SDL_RenderSetClipRect(renderer, rect)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return self;
 }
 
 static mrb_value
 mrb_sdl2_video_renderer_get_view_port(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Renderer *renderer = mrb_sdl2_video_renderer_get_ptr(mrb, self);
+  SDL_Rect rect;
+  SDL_RenderGetViewport(renderer, &rect);
+  return mrb_sdl2_rect(mrb, rect.x, rect.y, rect.w, rect.h);
 }
 
 static mrb_value
 mrb_sdl2_video_renderer_set_view_port(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Renderer *renderer = mrb_sdl2_video_renderer_get_ptr(mrb, self);
+  mrb_value arg;
+  mrb_get_args(mrb, "o", &arg);
+  SDL_Rect const * const rect = mrb_sdl2_rect_get_ptr(mrb, arg);
+  if (0 != SDL_RenderSetViewport(renderer, rect)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return self;
 }
 
 static mrb_value
@@ -576,57 +601,144 @@ mrb_sdl2_video_renderer_read_pixels(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_sdl2_video_texture_initialize(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  mrb_sdl2_video_texture_data_t *data =
+    (mrb_sdl2_video_texture_data_t*)DATA_PTR(self);
+  mrb_value *argv;
+  mrb_int argc;
+  mrb_get_args(mrb, "*", &argv, &argc);
+  if ((2 != argc) && (5 != argc)) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong number of arguments.");
+  }
+  if (NULL == data) {
+    data = (mrb_sdl2_video_texture_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_video_texture_data_t));
+    if (NULL == data) {
+      mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+    }
+    data->texture = NULL;
+  } else if (NULL != data->texture) {
+    SDL_DestroyTexture(data->texture);
+    data->texture = NULL;
+  }
+  SDL_Texture *texture = NULL;
+  if (2 == argc) {
+    SDL_Renderer *renderer = mrb_sdl2_video_renderer_get_ptr(mrb, argv[0]);
+    SDL_Surface  *surface  = mrb_sdl2_video_surface_get_ptr(mrb, argv[1]);
+    texture = SDL_CreateTextureFromSurface(renderer, surface);
+  }
+  if (5 == argc) {
+    SDL_Renderer *renderer = mrb_sdl2_video_renderer_get_ptr(mrb, argv[0]);
+    if (!mrb_fixnum_p(argv[1]) ||
+        !mrb_fixnum_p(argv[2]) ||
+        !mrb_fixnum_p(argv[3]) ||
+        !mrb_fixnum_p(argv[4])) {
+      mrb_raise(mrb, E_TYPE_ERROR, "given argument is unexpected type (expected Fixnum).");
+    }
+    uint32_t const format  = mrb_fixnum(argv[1]);
+    int const access       = mrb_fixnum(argv[2]);
+    int const w            = mrb_fixnum(argv[3]);
+    int const h            = mrb_fixnum(argv[4]);
+    texture = SDL_CreateTexture(renderer, format, access, w, h);
+  }
+  if (NULL == texture) {
+    mrb_free(mrb, data);
+    mruby_sdl2_raise_error(mrb);
+  }
+  data->texture = texture;
+  DATA_PTR(self) = data;
+  DATA_TYPE(self) = &mrb_sdl2_video_texture_data_type;
+  return self;
 }
 
 static mrb_value
 mrb_sdl2_video_texture_destroy(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  mrb_sdl2_video_texture_data_t *data =
+    (mrb_sdl2_video_texture_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_video_texture_data_type);
+  if (NULL != data->texture) {
+    SDL_DestroyTexture(data->texture);
+    data->texture = NULL;
+  }
+  return self;
 }
 
 static mrb_value
 mrb_sdl2_video_texture_get_alpha_mod(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  uint8_t alpha;
+  if (0 != SDL_GetTextureAlphaMod(texture, &alpha)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return mrb_fixnum_value(alpha);
 }
 
 static mrb_value
 mrb_sdl2_video_texture_set_alpha_mod(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  mrb_int alpha;
+  mrb_get_args(mrb, "i", &alpha);
+  if (0 != SDL_SetTextureAlphaMod(texture, (uint8_t)(alpha & 0xff))) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return self;
 }
 
 static mrb_value
 mrb_sdl2_video_texture_get_blend_mode(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  SDL_BlendMode mode;
+  if (0 != SDL_GetTextureBlendMode(texture, &mode)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return mrb_fixnum_value(mode);
 }
 
 static mrb_value
 mrb_sdl2_video_texture_set_blend_mode(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  mrb_int mode;
+  mrb_get_args(mrb, "i", &mode);
+  if (0 != SDL_SetTextureBlendMode(texture, (SDL_BlendMode)mode)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return self;
 }
 
 static mrb_value
 mrb_sdl2_video_texture_get_color_mod(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  uint8_t r, g, b;
+  if (0 != SDL_GetTextureColorMod(texture, &r, &g, &b)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  mrb_value rgb[] = {
+    mrb_fixnum_value(r),
+    mrb_fixnum_value(g),
+    mrb_fixnum_value(b)
+  };
+  return mrb_obj_new(mrb, mrb_class_get_under(mrb, mod_SDL2, "RGB"), 3, rgb);
 }
 
 static mrb_value
 mrb_sdl2_video_texture_set_color_mod(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  mrb_value rgb;
+  mrb_get_args(mrb, "o", &rgb);
+  if (!mrb_obj_is_kind_of(mrb, rgb, mrb_class_get_under(mrb, mod_SDL2, "RGB"))) {
+    mrb_raise(mrb, E_TYPE_ERROR, "given argument is unexpected type (expected RGB).");
+  }
+  uint8_t const r = mrb_fixnum(mrb_funcall(mrb, rgb, "r", 0));
+  uint8_t const g = mrb_fixnum(mrb_funcall(mrb, rgb, "g", 0));
+  uint8_t const b = mrb_fixnum(mrb_funcall(mrb, rgb, "b", 0));
+  if (0 != SDL_SetTextureColorMod(texture, r, g, b)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return self;
 }
 
 static mrb_value
@@ -646,29 +758,45 @@ mrb_sdl2_video_texture_unlock(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_sdl2_video_texture_get_format(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  uint32_t format;
+  if (0 != SDL_QueryTexture(texture, &format, NULL, NULL, NULL)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return mrb_fixnum_value(format);
 }
 
 static mrb_value
 mrb_sdl2_video_texture_get_access(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  int access;
+  if (0 != SDL_QueryTexture(texture, NULL, &access, NULL, NULL)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return mrb_fixnum_value(access);
 }
 
 static mrb_value
 mrb_sdl2_video_texture_get_width(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  int w;
+  if (0 != SDL_QueryTexture(texture, NULL, NULL, &w, NULL)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return mrb_fixnum_value(w);
 }
 
 static mrb_value
 mrb_sdl2_video_texture_get_height(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  SDL_Texture *texture = mrb_sdl2_video_texture_get_ptr(mrb, self);
+  int h;
+  if (0 != SDL_QueryTexture(texture, NULL, NULL, NULL, &h)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return mrb_fixnum_value(h);
 }
 
 static mrb_value
@@ -687,15 +815,15 @@ mrb_sdl2_video_texture_update(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_sdl2_video_pixelbuf_get_pitch(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  pixelbuf_data_t *data = mrb_sdl2_video_pixelbuf_get_ptr(mrb, self);
+  return mrb_fixnum_value(data->pitch);
 }
 
 static mrb_value
 mrb_sdl2_video_pixelbuf_get_rect(mrb_state *mrb, mrb_value self)
 {
-  mrb_raise(mrb, E_NOTIMP_ERROR, "not implemented.");
-  return mrb_nil_value();
+  pixelbuf_data_t *data = mrb_sdl2_video_pixelbuf_get_ptr(mrb, self);
+  return mrb_sdl2_rect(mrb, data->rect.x, data->rect.y, data->rect.w, data->rect.h);
 }
 
 /***************************************************************************
