@@ -61,7 +61,14 @@ mrb_sdl2_audio_audiospec_data_free(mrb_state *mrb, void *p)
 static void
 mrb_sdl2_audio_audiodevice_data_free(mrb_state *mrb, void *p)
 {
-  mrb_free(mrb, p);
+  mrb_sdl2_audio_audiodevice_data_t *data =
+    (mrb_sdl2_audio_audiodevice_data_t*)p;
+  if (NULL != data) {
+    if (0 < data->id) {
+      SDL_CloseAudioDevice(data->id);
+    }
+    mrb_free(mrb, p);
+  }
 }
 
 struct mrb_data_type const mrb_sdl2_audio_audiocvt_data_type = {
@@ -707,6 +714,7 @@ mrb_sdl2_audio_audiodevice_close(mrb_state *mrb, mrb_value self)
     (mrb_sdl2_audio_audiodevice_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_audio_audiodevice_data_type);
   if (0 < data->id) {
     SDL_CloseAudioDevice(data->id);
+    data->id = 0;
   }
   return self;
 }
