@@ -11,32 +11,30 @@ begin
   begin
   w = SDL2::Video::Window.new "sample", X, Y, W, H, FLAGS
   gl_context = SDL2::Video::GLContext.new w
-  if Kernel.respond_to?(:sleep) then
-    s = w.size
-    p = w.position
-    for i in 0..100
-      w.position = SDL2::Point.new(p.x + i, p.y + i)
-      w.size = SDL2::Size.new(s.w - i, s.h - i)
-      usleep 10000
-    end
-    p = w.position
-    for i in 0..100
-      w.position = SDL2::Point.new(p.x + i, p.y - i)
-      w.size = SDL2::Size.new(s.w + i, s.h + i)
-      usleep 10000
-    end
-    p = w.position
-    for i in 0..100
-      w.position = SDL2::Point.new(p.x - i, p.y - i)
-      w.size = SDL2::Size.new(s.w - i, s.h - i)
-      usleep 10000
-    end
-    p = w.position
-    for i in 0..100
-      w.position = SDL2::Point.new(p.x - i, p.y + i)
-      w.size = SDL2::Size.new(s.w + i, s.h + i)
-      usleep 10000
-    end
+  s = w.size
+  p = w.position
+  for i in 0..100
+    w.position = SDL2::Point.new(p.x + i, p.y + i)
+    w.size = SDL2::Size.new(s.w - i, s.h - i)
+    SDL2::delay 10
+  end
+  p = w.position
+  for i in 0..100
+    w.position = SDL2::Point.new(p.x + i, p.y - i)
+    w.size = SDL2::Size.new(s.w + i, s.h + i)
+    SDL2::delay 10
+  end
+  p = w.position
+  for i in 0..100
+    w.position = SDL2::Point.new(p.x - i, p.y - i)
+    w.size = SDL2::Size.new(s.w - i, s.h - i)
+    SDL2::delay 10
+  end
+  p = w.position
+  for i in 0..100
+    w.position = SDL2::Point.new(p.x - i, p.y + i)
+    w.size = SDL2::Size.new(s.w + i, s.h + i)
+    SDL2::delay 10
   end
   gl_context.delete
   w.destroy

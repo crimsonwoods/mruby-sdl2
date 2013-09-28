@@ -1,6 +1,7 @@
 #include "sdl2.h"
 #include "sdl2_video.h"
 #include "sdl2_rect.h"
+#include "sdl2_audio.h"
 #include "mruby/string.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_platform.h>
@@ -82,6 +83,15 @@ mrb_sdl2_get_platform(mrb_state *mrb, mrb_value self)
   return mrb_str_new_cstr(mrb, SDL_GetPlatform());
 }
 
+static mrb_value
+mrb_sdl2_delay(mrb_state *mrb, mrb_value self)
+{
+  mrb_int ms;
+  mrb_get_args(mrb, "i", &ms);
+  SDL_Delay((Uint32)ms);
+  return self;
+}
+
 void
 mruby_sdl2_module_init(mrb_state *mrb)
 {
@@ -94,6 +104,7 @@ mruby_sdl2_module_init(mrb_state *mrb)
   mrb_define_module_function(mrb, mod_SDL2, "quit_subsystem", mrb_sdl2_quit_subsystem, ARGS_REQ(1));
   mrb_define_module_function(mrb, mod_SDL2, "init?",          mrb_sdl2_was_init,       ARGS_REQ(1));
   mrb_define_module_function(mrb, mod_SDL2, "platform",       mrb_sdl2_get_platform,   ARGS_NONE());
+  mrb_define_module_function(mrb, mod_SDL2, "delay",          mrb_sdl2_delay,          ARGS_REQ(1));
 
   mrb_define_const(mrb, mod_SDL2, "SDL_INIT_TIMER",          mrb_fixnum_value(SDL_INIT_TIMER));
   mrb_define_const(mrb, mod_SDL2, "SDL_INIT_AUDIO",          mrb_fixnum_value(SDL_INIT_AUDIO));
@@ -121,11 +132,13 @@ mrb_mruby_sdl2_gem_init(mrb_state *mrb)
   mruby_sdl2_module_init(mrb);
   mruby_sdl2_video_init(mrb);
   mruby_sdl2_rect_init(mrb);
+  mruby_sdl2_audio_init(mrb);
 }
 
 void
 mrb_mruby_sdl2_gem_final(mrb_state *mrb)
 {
+  mruby_sdl2_audio_final(mrb);
   mruby_sdl2_rect_final(mrb);
   mruby_sdl2_video_final(mrb);
   mruby_sdl2_module_final(mrb);

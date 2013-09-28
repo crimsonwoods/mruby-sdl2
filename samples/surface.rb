@@ -19,9 +19,7 @@ begin
       end
     end
     w.update_surface
-    if Kernel.respond_to?(:sleep) then
-      sleep 3
-    end
+    SDL2::delay(3000)
     w.destroy
   ensure
     SDL2::Video::quit
