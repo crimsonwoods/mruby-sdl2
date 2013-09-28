@@ -2,6 +2,7 @@
 #include "mruby/data.h"
 #include "mruby/class.h"
 #include "mruby/variable.h"
+#include "mruby/array.h"
 
 static struct RClass *class_Rect = NULL;
 static struct RClass *class_Point = NULL;
@@ -77,6 +78,28 @@ mrb_sdl2_rect(mrb_state *mrb, int x, int y, int w, int h)
 }
 
 mrb_value
+mrb_sdl2_rect_direct(mrb_state *mrb, SDL_Rect const *rect)
+{
+  mrb_sdl2_rect_rect_data_t *data =
+    (mrb_sdl2_rect_rect_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_rect_rect_data_t));
+  if (NULL == data) {
+    mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+  }
+  if (NULL == rect) {
+    data->rect.x = 0;
+    data->rect.y = 0;
+    data->rect.w = 0;
+    data->rect.h = 0;
+  } else {
+    data->rect.x = rect->x;
+    data->rect.y = rect->y;
+    data->rect.w = rect->w;
+    data->rect.h = rect->h;
+  }
+  return mrb_obj_value(Data_Wrap_Struct(mrb, class_Rect, &mrb_sdl2_rect_rect_data_type, data));
+}
+
+mrb_value
 mrb_sdl2_point(mrb_state *mrb, int x, int y)
 {
   mrb_sdl2_rect_point_data_t *data =
@@ -134,6 +157,12 @@ mrb_sdl2_size_get_ptr(mrb_state *mrb, mrb_value size)
     (mrb_sdl2_rect_size_data_t*)mrb_data_get_ptr(mrb, size, &mrb_sdl2_rect_size_data_type);
   return &data->size;
 }
+
+/***************************************************************************
+*
+* module SDL2::Rect
+*
+***************************************************************************/
 
 static mrb_value
 mrb_sdl2_rect_rect_initialize(mrb_state *mrb, mrb_value self)
@@ -250,20 +279,6 @@ mrb_sdl2_rect_rect_set_h(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
-mrb_sdl2_rect_rect_equal(mrb_state *mrb, mrb_value self)
-{
-  mrb_value arg;
-  mrb_get_args(mrb, "o", &arg);
-  SDL_Rect const * const lhs = mrb_sdl2_rect_get_ptr(mrb, self);
-  SDL_Rect const * const rhs = mrb_sdl2_rect_get_ptr(mrb, arg);
-  if ((lhs->x != rhs->x) || (lhs->y != rhs->y) ||
-      (lhs->w != rhs->w) || (lhs->h != rhs->h)) {
-    return mrb_false_value();
-  }
-  return mrb_true_value();
-}
-
-static mrb_value
 mrb_sdl2_rect_rect_get_position(mrb_state *mrb, mrb_value self)
 {
   SDL_Rect const * const rect = mrb_sdl2_rect_get_ptr(mrb, self);
@@ -337,6 +352,116 @@ mrb_sdl2_rect_rect_set_size(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+static mrb_value
+mrb_sdl2_rect_rect_has_intersection(mrb_state *mrb, mrb_value self)
+{
+  mrb_value arg;
+  mrb_get_args(mrb, "o", &arg);
+  SDL_Rect const * const lhs = mrb_sdl2_rect_get_ptr(mrb, self);
+  SDL_Rect const * const rhs = mrb_sdl2_rect_get_ptr(mrb, arg);
+  return SDL_HasIntersection(lhs, rhs) == SDL_FALSE ? mrb_false_value() : mrb_true_value();
+}
+
+static mrb_value
+mrb_sdl2_rect_rect_intersection(mrb_state *mrb, mrb_value self)
+{
+  mrb_value arg;
+  mrb_get_args(mrb, "o", &arg);
+  SDL_Rect const * const lhs = mrb_sdl2_rect_get_ptr(mrb, self);
+  SDL_Rect const * const rhs = mrb_sdl2_rect_get_ptr(mrb, arg);
+  SDL_Rect result = { 0, };
+  if (SDL_FALSE == SDL_IntersectRect(lhs, rhs, &result)) {
+    return mrb_nil_value();
+  }
+  return mrb_sdl2_rect_direct(mrb, &result);
+}
+
+static mrb_value
+mrb_sdl2_rect_rect_intersection_line(mrb_state *mrb, mrb_value self)
+{
+  mrb_value p1, p2;
+  mrb_get_args(mrb, "oo", &p1, &p2);
+  SDL_Rect const * const rect = mrb_sdl2_rect_get_ptr(mrb, self);
+  SDL_Point const * const pt1 = mrb_sdl2_point_get_ptr(mrb, p1);
+  SDL_Point const * const pt2 = mrb_sdl2_point_get_ptr(mrb, p2);
+  int x1, y1, x2, y2;
+  x1 = pt1->x;
+  y1 = pt1->y;
+  x2 = pt2->x;
+  y2 = pt2->y;
+  if (SDL_FALSE == SDL_IntersectRectAndLine(rect, &x1, &y1, &x2, &y2)) {
+    return mrb_nil_value();
+  }
+  mrb_value const points[] = {
+    mrb_sdl2_point(mrb, x1, y1),
+    mrb_sdl2_point(mrb, x2, y2),
+  };
+  return mrb_ary_new_from_values(mrb, 2, points);
+}
+
+static mrb_value
+mrb_sdl2_rect_rect_is_empty(mrb_state *mrb, mrb_value self)
+{
+  SDL_Rect const * const rect = mrb_sdl2_rect_get_ptr(mrb, self);
+  return (SDL_FALSE == SDL_RectEmpty(rect)) ? mrb_false_value() : mrb_true_value();
+}
+
+static mrb_value
+mrb_sdl2_rect_rect_equals(mrb_state *mrb, mrb_value self)
+{
+  mrb_value arg;
+  mrb_get_args(mrb, "o", &arg);
+  SDL_Rect const * const lhs = mrb_sdl2_rect_get_ptr(mrb, self);
+  SDL_Rect const * const rhs = mrb_sdl2_rect_get_ptr(mrb, arg);
+  return (SDL_FALSE == SDL_RectEquals(lhs, rhs)) ? mrb_false_value() : mrb_true_value();
+}
+
+static mrb_value
+mrb_sdl2_rect_rect_not_equals(mrb_state *mrb, mrb_value self)
+{
+  mrb_value arg;
+  mrb_get_args(mrb, "o", &arg);
+  SDL_Rect const * const lhs = mrb_sdl2_rect_get_ptr(mrb, self);
+  SDL_Rect const * const rhs = mrb_sdl2_rect_get_ptr(mrb, arg);
+  return (SDL_FALSE != SDL_RectEquals(lhs, rhs)) ? mrb_false_value() : mrb_true_value();
+}
+
+static mrb_value
+mrb_sdl2_rect_rect_union(mrb_state *mrb, mrb_value self)
+{
+  mrb_value arg;
+  mrb_get_args(mrb, "o", &arg);
+  SDL_Rect const * const lhs = mrb_sdl2_rect_get_ptr(mrb, self);
+  SDL_Rect const * const rhs = mrb_sdl2_rect_get_ptr(mrb, arg);
+  SDL_Rect result = { 0, };
+  SDL_UnionRect(lhs, rhs, &result);
+  return mrb_sdl2_rect_direct(mrb, &result);
+}
+
+static mrb_value
+mrb_sdl2_rect_rect_enclose_points(mrb_state *mrb, mrb_value self)
+{
+  mrb_value clip;
+  mrb_value *argv;
+  mrb_int argc;
+  mrb_get_args(mrb, "o*", &clip, &argv, &argc);
+  SDL_Rect const * const c = mrb_sdl2_rect_get_ptr(mrb, clip);
+  SDL_Point points[argc];
+  SDL_Rect result;
+  mrb_int i;
+  for (i = 0; i < argc; ++i) {
+    SDL_Point const * const p = mrb_sdl2_point_get_ptr(mrb, argv[i]);
+    points[i] = *p;
+  }
+  return (SDL_FALSE == SDL_EnclosePoints(points, argc, c, &result)) ?
+    mrb_nil_value() : mrb_sdl2_rect_direct(mrb, &result);
+}
+
+/***************************************************************************
+*
+* module SDL2::Point
+*
+***************************************************************************/
 
 static mrb_value
 mrb_sdl2_rect_point_initialize(mrb_state *mrb, mrb_value self)
@@ -404,6 +529,11 @@ mrb_sdl2_rect_point_set_y(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/***************************************************************************
+*
+* module SDL2::Size
+*
+***************************************************************************/
 
 static mrb_value
 mrb_sdl2_rect_size_initialize(mrb_state *mrb, mrb_value self)
@@ -470,7 +600,6 @@ mrb_sdl2_rect_size_set_h(mrb_state *mrb, mrb_value self)
   return self;
 }
 
-
 void
 mruby_sdl2_rect_init(mrb_state *mrb)
 {
@@ -482,20 +611,27 @@ mruby_sdl2_rect_init(mrb_state *mrb)
   MRB_SET_INSTANCE_TT(class_Point, MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_Size,  MRB_TT_DATA);
 
-  mrb_define_method(mrb, class_Rect, "initialize", mrb_sdl2_rect_rect_initialize,   ARGS_OPT(4));
-  mrb_define_method(mrb, class_Rect, "x",          mrb_sdl2_rect_rect_get_x,        ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "x=",         mrb_sdl2_rect_rect_set_x,        ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "y",          mrb_sdl2_rect_rect_get_y,        ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "y=",         mrb_sdl2_rect_rect_set_y,        ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "w",          mrb_sdl2_rect_rect_get_w,        ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "w=",         mrb_sdl2_rect_rect_set_w,        ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "h",          mrb_sdl2_rect_rect_get_h,        ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "h=",         mrb_sdl2_rect_rect_set_h,        ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "=",          mrb_sdl2_rect_rect_equal,        ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "position",   mrb_sdl2_rect_rect_get_position, ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "position=",  mrb_sdl2_rect_rect_set_position, ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "size",       mrb_sdl2_rect_rect_get_size,     ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "size=",      mrb_sdl2_rect_rect_set_size,     ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "initialize",         mrb_sdl2_rect_rect_initialize,        ARGS_OPT(4));
+  mrb_define_method(mrb, class_Rect, "x",                  mrb_sdl2_rect_rect_get_x,             ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "x=",                 mrb_sdl2_rect_rect_set_x,             ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "y",                  mrb_sdl2_rect_rect_get_y,             ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "y=",                 mrb_sdl2_rect_rect_set_y,             ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "w",                  mrb_sdl2_rect_rect_get_w,             ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "w=",                 mrb_sdl2_rect_rect_set_w,             ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "h",                  mrb_sdl2_rect_rect_get_h,             ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "h=",                 mrb_sdl2_rect_rect_set_h,             ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "position",           mrb_sdl2_rect_rect_get_position,      ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "position=",          mrb_sdl2_rect_rect_set_position,      ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "size",               mrb_sdl2_rect_rect_get_size,          ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "size=",              mrb_sdl2_rect_rect_set_size,          ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "has_intersection?",  mrb_sdl2_rect_rect_has_intersection,  ARGS_REQ(2));
+  mrb_define_method(mrb, class_Rect, "intersection",       mrb_sdl2_rect_rect_intersection,      ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "intersection_line",  mrb_sdl2_rect_rect_intersection_line, ARGS_REQ(2));
+  mrb_define_method(mrb, class_Rect, "empty?",             mrb_sdl2_rect_rect_is_empty,          ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "==",                 mrb_sdl2_rect_rect_equals,            ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "!=",                 mrb_sdl2_rect_rect_not_equals,        ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "union",              mrb_sdl2_rect_rect_union,             ARGS_REQ(1));
+  mrb_define_class_method(mrb, class_Rect, "enclose_points", mrb_sdl2_rect_rect_enclose_points, ARGS_REQ(1) | ARGS_OPT(1));
 
   mrb_define_method(mrb, class_Point, "initialize", mrb_sdl2_rect_point_initialize, ARGS_OPT(2));
   mrb_define_method(mrb, class_Point, "x",          mrb_sdl2_rect_point_get_x,      ARGS_NONE());

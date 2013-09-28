@@ -539,7 +539,7 @@ mrb_sdl2_video_renderer_get_clip_rect(mrb_state *mrb, mrb_value self)
   SDL_Renderer *renderer = mrb_sdl2_video_renderer_get_ptr(mrb, self);
   SDL_Rect rect;
   SDL_RenderGetClipRect(renderer, &rect);
-  return mrb_sdl2_rect(mrb, rect.x, rect.y, rect.w, rect.h);
+  return mrb_sdl2_rect_direct(mrb, &rect);
 }
 
 static mrb_value
@@ -561,7 +561,7 @@ mrb_sdl2_video_renderer_get_view_port(mrb_state *mrb, mrb_value self)
   SDL_Renderer *renderer = mrb_sdl2_video_renderer_get_ptr(mrb, self);
   SDL_Rect rect;
   SDL_RenderGetViewport(renderer, &rect);
-  return mrb_sdl2_rect(mrb, rect.x, rect.y, rect.w, rect.h);
+  return mrb_sdl2_rect_direct(mrb, &rect);
 }
 
 static mrb_value
@@ -823,7 +823,7 @@ static mrb_value
 mrb_sdl2_video_pixelbuf_get_rect(mrb_state *mrb, mrb_value self)
 {
   pixelbuf_data_t *data = mrb_sdl2_video_pixelbuf_get_ptr(mrb, self);
-  return mrb_sdl2_rect(mrb, data->rect.x, data->rect.y, data->rect.w, data->rect.h);
+  return mrb_sdl2_rect_direct(mrb, &data->rect);
 }
 
 /***************************************************************************

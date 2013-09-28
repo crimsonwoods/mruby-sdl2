@@ -191,7 +191,7 @@ mrb_sdl2_video_surface_get_clip_rect(mrb_state *mrb, mrb_value self)
   SDL_Surface *s = mrb_sdl2_video_surface_get_ptr(mrb, self);
   SDL_Rect rect;
   SDL_GetClipRect(s, &rect);
-  return mrb_sdl2_rect(mrb, rect.x, rect.y, rect.w, rect.h);
+  return mrb_sdl2_rect_direct(mrb, &rect);
 }
 
 static mrb_value

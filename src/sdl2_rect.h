@@ -16,6 +16,7 @@ typedef struct size_data_t {
 extern void mruby_sdl2_rect_init(mrb_state *mrb);
 extern void mruby_sdl2_rect_final(mrb_state *mrb);
 
+extern mrb_value mrb_sdl2_rect_direct(mrb_state *mrb, SDL_Rect const *rect);
 extern mrb_value mrb_sdl2_rect(mrb_state *mrb, int x, int y, int w, int h);
 extern mrb_value mrb_sdl2_point(mrb_state *mrb, int x, int y);
 extern mrb_value mrb_sdl2_size(mrb_state *mrb, int w, int h);
