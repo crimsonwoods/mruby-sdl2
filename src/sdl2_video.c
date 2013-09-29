@@ -733,6 +733,18 @@ mrb_sdl2_video_window_get_renderer(mrb_state *mrb, mrb_value self)
   return mrb_sdl2_video_renderer(mrb, renderer);
 }
 
+static mrb_value
+mrb_sdl2_video_window_swap(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_video_window_data_t *data =
+    (mrb_sdl2_video_window_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_video_window_data_type);
+  if (NULL == data->window) {
+    return mrb_nil_value();
+  }
+  SDL_GL_SwapWindow(data->window);
+  return self;
+}
+
 /***************************************************************************
 *
 * class SDL2::Video::GLContext
@@ -875,6 +887,7 @@ mruby_sdl2_video_init(mrb_state *mrb)
   mrb_define_method(mrb, class_Window, "update_surface",       mrb_sdl2_video_window_update_surface,       ARGS_NONE());
   mrb_define_method(mrb, class_Window, "update_surface_rects", mrb_sdl2_video_window_update_surface_rects, ARGS_ANY());
   mrb_define_method(mrb, class_Window, "renderer",             mrb_sdl2_video_window_get_renderer,         ARGS_NONE());
+  mrb_define_method(mrb, class_Window, "swap",                 mrb_sdl2_video_window_swap,                 ARGS_NONE());
 
   mrb_define_method(mrb, class_GLContext, "initialize", mrb_sdl2_video_glcontext_initialize, ARGS_OPT(1));
   mrb_define_method(mrb, class_GLContext, "create",     mrb_sdl2_video_glcontext_create,     ARGS_REQ(1));
