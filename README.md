@@ -7,7 +7,7 @@ _mruby-sdl2_ wrapped 'SDL2.0'.
 ----
 
 1. edit your 'build_config.rb'.
-2. run make command.
+2. run 'make' command.
 
 build_config.rb:
 
@@ -21,6 +21,28 @@ build_config.rb:
       linker.libraries << %w(SDL2)
       linker.library_paths << "/path/to/your/SDL2/lib"
     end
+
+# Hot to use OpenGL
+----
+
+## Build
+
+1. edit your 'build_config.rb'.
+2. add one mrbgem 'mruby-gles' in your build config script.
+3. run 'make' command.
+4. run mruby with your script.
+
+## Program
+
+1. create window with 'SDL_WINDOW_OPENGL' flag.
+2. create GLContext associated window.
+3. draw something
+4. swap window
+
+
+build_config.rb:
+
+    conf.gem :github => 'xxuejie/mruby-gles', :branch => 'master'
 
 # Sample code
 ----
