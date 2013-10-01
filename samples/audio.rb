@@ -1,7 +1,8 @@
 SDL2::init
 
 # Please modify the path.
-PATH_TO_SAMPLE_WAV = "/path/to/your/sample.wav"
+#PATH_TO_SAMPLE_WAV = "/path/to/your/sample.wav"
+PATH_TO_SAMPLE_WAV = "../mruby-sdl2/samples/sample.wav"
 
 def format_to_s(fmt)
   case fmt
@@ -52,21 +53,26 @@ begin
     i += 1
   end
   begin
-    spec = SDL2::Audio::AudioSpec.load_wav(PATH_TO_SAMPLE_WAV)
+    data = SDL2::Audio::AudioData.new(PATH_TO_SAMPLE_WAV)
     puts "Audio spec of loaded wav file:"
-    display_spec(spec)
+    display_spec(data.spec)
     offset = 0
-    spec.callback = proc {|udata, stream, len|
-      SDL2::Audio::mix_audio(stream, 0, spec, offset, len, 32)
+    data.spec.callback = proc {|udata, stream, len|
+      if offset > data.length then
+        SDL2::Audio::pause(true)
+      end
+      SDL2::Audio::mix_audio(stream, 0, data, offset, len, 32)
       offset += len
     }
-    aspec = SDL2::Audio::open spec
+    aspec = SDL2::Audio::open data.spec
     puts "Audio spec of opened device:"
     display_spec(aspec);
     begin
       # Play sound 5 seconds.
       SDL2::Audio::pause(false)
-      SDL2::delay 5000
+      until SDL2::Audio::status == SDL2::Audio::SDL_AUDIO_PAUSED
+        SDL2::delay 100
+      end
       SDL2::Audio::pause(true)
     ensure
       SDL2::Audio::close

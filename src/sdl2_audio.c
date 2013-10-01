@@ -10,6 +10,7 @@ struct RClass *mod_Audio = NULL;
 static struct RClass *class_AudioCVT    = NULL;
 static struct RClass *class_AudioSpec   = NULL;
 static struct RClass *class_AudioDevice = NULL;
+static struct RClass *class_AudioData   = NULL;
 
 typedef struct mrb_sdl2_audio_userdata_t {
   mrb_state *mrb;
@@ -23,14 +24,17 @@ typedef struct mrb_sdl2_audio_audiocvt_data_t {
 typedef struct mrb_sdl2_audio_audiospec_data_t {
   SDL_AudioSpec             spec;
   mrb_sdl2_audio_userdata_t udata;
-  Uint8*                    audio_buf;
-  Uint32                    audio_len;
 } mrb_sdl2_audio_audiospec_data_t;
 
 typedef struct mrb_sdl2_audio_audiodevice_data_t {
   SDL_AudioDeviceID id;
   SDL_AudioSpec     spec;
 } mrb_sdl2_audio_audiodevice_data_t;
+
+typedef struct mrb_sdl2_audio_audiodata_data_t {
+  Uint8*                          buf;
+  Uint32                          len;
+} mrb_sdl2_audio_audiodata_data_t;
 
 static void
 mrb_sdl2_audio_audiocvt_data_free(mrb_state *mrb, void *p)
@@ -51,9 +55,6 @@ mrb_sdl2_audio_audiospec_data_free(mrb_state *mrb, void *p)
   mrb_sdl2_audio_audiospec_data_t *data =
     (mrb_sdl2_audio_audiospec_data_t*)p;
   if (NULL != data) {
-    if (NULL != data->audio_buf) {
-      SDL_FreeWAV(data->audio_buf);
-    }
     mrb_free(mrb, data);
   }
 }
@@ -71,6 +72,19 @@ mrb_sdl2_audio_audiodevice_data_free(mrb_state *mrb, void *p)
   }
 }
 
+static void
+mrb_sdl2_audio_audiodata_data_free(mrb_state *mrb, void *p)
+{
+  mrb_sdl2_audio_audiodata_data_t *data =
+    (mrb_sdl2_audio_audiodata_data_t*)p;
+  if (NULL != data) {
+    if (NULL != data->buf) {
+      SDL_FreeWAV(data->buf);
+    }
+    mrb_free(mrb, data);
+  }
+}
+
 struct mrb_data_type const mrb_sdl2_audio_audiocvt_data_type = {
   "AudioCVT", mrb_sdl2_audio_audiocvt_data_free
 };
@@ -81,6 +95,10 @@ struct mrb_data_type const mrb_sdl2_audio_audiospec_data_type = {
 
 struct mrb_data_type const mrb_sdl2_audio_audiodevice_data_type = {
   "AudioDevice", mrb_sdl2_audio_audiodevice_data_free
+};
+
+struct mrb_data_type const mrb_sdl2_audio_audiodata_data_type = {
+  "AudioData", mrb_sdl2_audio_audiodata_data_free
 };
 
 SDL_AudioSpec *
@@ -338,15 +356,15 @@ mrb_sdl2_audio_mix_audio(mrb_state *mrb, mrb_value mod)
   if (mrb_type(src) == MRB_TT_CPTR) {
     src_ptr = (Uint8 const *)mrb_cptr(src);
   } else if (mrb_type(src) == MRB_TT_DATA) {
-    if (DATA_TYPE(src) == &mrb_sdl2_audio_audiospec_data_type) {
-      mrb_sdl2_audio_audiospec_data_t const *data =
-        (mrb_sdl2_audio_audiospec_data_t*)mrb_data_get_ptr(mrb, src, &mrb_sdl2_audio_audiospec_data_type);
-      if (NULL != data->audio_buf) {
-        src_ptr = (Uint8 const *)data->audio_buf;
-        if (spos > data->audio_len) {
+    if (DATA_TYPE(src) == &mrb_sdl2_audio_audiodata_data_type) {
+      mrb_sdl2_audio_audiodata_data_t const *data =
+        (mrb_sdl2_audio_audiodata_data_t*)mrb_data_get_ptr(mrb, src, &mrb_sdl2_audio_audiodata_data_type);
+      if (NULL != data->buf) {
+        src_ptr = (Uint8 const *)data->buf;
+        if (spos > data->len) {
           len = 0;
-        } else if (len > (data->audio_len - spos)) {
-          len = data->audio_len - spos;
+        } else if (len > (data->len - spos)) {
+          len = data->len - spos;
         }
       } else {
         mrb_raise(mrb, E_ARGUMENT_ERROR, "given argument has no audio buffer.");
@@ -428,8 +446,6 @@ mrb_sdl2_audio_audiospec_initialize(mrb_state *mrb, mrb_value self)
     data->spec = (SDL_AudioSpec){ 0, };
     data->spec.callback = &mrb_sdl2_audio_audiospec_callback;
     data->spec.userdata = (void*)&data->udata;
-    data->audio_buf = NULL;
-    data->audio_len = 0;
   }
 
   data->udata.mrb = mrb;
@@ -454,8 +470,6 @@ mrb_sdl2_audio_audiospec_initialize(mrb_state *mrb, mrb_value self)
   } else {
     data->spec.samples = 4096;
   }
-  data->audio_buf = NULL;
-  data->audio_len = 0;
 
   DATA_PTR(self) = data;
   DATA_TYPE(self) = &mrb_sdl2_audio_audiospec_data_type;
@@ -567,28 +581,6 @@ mrb_sdl2_audio_audiospec_set_userdata(mrb_state *mrb, mrb_value self)
   return self;
 }
 
-static mrb_value
-mrb_sdl2_audio_audiospec_load_wav(mrb_state *mrb, mrb_value cls)
-{
-  mrb_value file;
-  mrb_sdl2_audio_audiospec_data_t *data =
-    (mrb_sdl2_audio_audiospec_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_audio_audiospec_data_t));
-  if (NULL == data) {
-    mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
-  }
-  mrb_get_args(mrb, "S", &file);
-  if (NULL == SDL_LoadWAV(RSTRING_PTR(file), &data->spec, &data->audio_buf, &data->audio_len)) {
-    mrb_free(mrb, data);
-    mruby_sdl2_raise_error(mrb);
-  }
-  mrb_value obj = mrb_obj_value(Data_Wrap_Struct(mrb, class_AudioSpec, &mrb_sdl2_audio_audiospec_data_type, data));
-  data->spec.userdata = &data->udata;
-  data->spec.callback = &mrb_sdl2_audio_audiospec_callback;
-  data->udata.mrb = mrb;
-  data->udata.obj = obj;
-  return obj;
-}
-
 /***************************************************************************
 *
 * class SDL2::Audio::AudioCVT
@@ -598,12 +590,15 @@ mrb_sdl2_audio_audiospec_load_wav(mrb_state *mrb, mrb_value cls)
 static mrb_value
 mrb_sdl2_audio_audiocvt_initialize(mrb_state *mrb, mrb_value self)
 {
-  mrb_value srcspec;
+  mrb_value src_spec, src_data;
   mrb_int format, channels, freq;
-  mrb_get_args(mrb, "oiii", &srcspec, &format, &channels, &freq);
+  mrb_get_args(mrb, "ooiii", &src_spec, &src_data, &format, &channels, &freq);
 
-  mrb_sdl2_audio_audiospec_data_t *spec = 
-    (mrb_sdl2_audio_audiospec_data_t*)mrb_data_get_ptr(mrb, srcspec, &mrb_sdl2_audio_audiospec_data_type);
+  mrb_sdl2_audio_audiospec_data_t *sspec =
+    (mrb_sdl2_audio_audiospec_data_t*)mrb_data_get_ptr(mrb, src_spec, &mrb_sdl2_audio_audiospec_data_type);
+
+  mrb_sdl2_audio_audiodata_data_t *sdata = 
+    (mrb_sdl2_audio_audiodata_data_t*)mrb_data_get_ptr(mrb, src_data, &mrb_sdl2_audio_audiodata_data_type);
 
   mrb_sdl2_audio_audiocvt_data_t *data =
     (mrb_sdl2_audio_audiocvt_data_t*)DATA_PTR(self);
@@ -618,27 +613,27 @@ mrb_sdl2_audio_audiocvt_initialize(mrb_state *mrb, mrb_value self)
 
   int const ret = SDL_BuildAudioCVT(
                     &data->cvt,
-                    spec->spec.format,
-                    spec->spec.channels,
-                    spec->spec.freq,
+                    sspec->spec.format,
+                    sspec->spec.channels,
+                    sspec->spec.freq,
                     (SDL_AudioFormat)format,
                     (Uint8)channels,
                     (int)freq);
   if (ret < 0) {
     mruby_sdl2_raise_error(mrb);
   }
-  if (0 != spec->audio_len) {
-    data->cvt.len = spec->audio_len;
+  if (0 != sdata->len) {
+    data->cvt.len = sdata->len;
   } else {
-    data->cvt.len = spec->spec.size;
+    data->cvt.len = sspec->spec.size;
   }
   data->cvt.buf = mrb_malloc(mrb, data->cvt.len_mult * data->cvt.len);
   if (NULL == data->cvt.buf) {
     mrb_free(mrb, data);
     mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
   }
-  if (NULL != spec->audio_buf) {
-    SDL_memcpy(data->cvt.buf, spec->audio_buf, spec->audio_len);
+  if (NULL != sdata->buf) {
+    SDL_memcpy(data->cvt.buf, sdata->buf, sdata->len);
   }
 
   DATA_PTR(self) = data;
@@ -773,6 +768,92 @@ mrb_sdl2_audio_audiodevice_get_status(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+/***************************************************************************
+*
+* class SDL2::Audio::AudioDevice
+*
+***************************************************************************/
+
+static mrb_value
+mrb_sdl2_audio_audiodata_initialize(mrb_state *mrb, mrb_value self)
+{
+  mrb_value file;
+  mrb_sdl2_audio_audiodata_data_t *data =
+    (mrb_sdl2_audio_audiodata_data_t*)DATA_PTR(self);
+
+  mrb_sdl2_audio_audiospec_data_t *spec =
+    (mrb_sdl2_audio_audiospec_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_audio_audiospec_data_t));
+  if (NULL == spec) {
+    mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+  }
+
+  if (NULL == data) {
+    data = (mrb_sdl2_audio_audiodata_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_audio_audiodata_data_t));
+    if (NULL == data) {
+      mrb_free(mrb, spec);
+      mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+    }
+    data->buf = NULL;
+    data->len = 0;
+  }
+
+  mrb_get_args(mrb, "S", &file);
+  if (NULL == SDL_LoadWAV(RSTRING_PTR(file), &spec->spec, &data->buf, &data->len)) {
+    mrb_free(mrb, spec);
+    mrb_free(mrb, data);
+    mruby_sdl2_raise_error(mrb);
+  }
+
+  mrb_value s = mrb_obj_value(Data_Wrap_Struct(mrb, class_AudioSpec, &mrb_sdl2_audio_audiospec_data_type, spec));
+
+  spec->spec.userdata = &spec->udata;
+  spec->spec.callback = &mrb_sdl2_audio_audiospec_callback;
+  spec->udata.mrb = mrb;
+  spec->udata.obj = s;
+
+  mrb_iv_set(mrb, self, mrb_intern2(mrb, "spec", 4), s);
+
+  DATA_PTR(self) = data;
+  DATA_TYPE(self) = &mrb_sdl2_audio_audiodata_data_type;
+
+  return self;
+}
+
+static mrb_value
+mrb_sdl2_audio_audiodata_destroy(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_audio_audiodata_data_t *data =
+    (mrb_sdl2_audio_audiodata_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_audio_audiodata_data_type);
+  if (NULL != data->buf) {
+    SDL_FreeWAV(data->buf);
+    data->buf = NULL;
+    data->len = 0;
+  }
+  return self;
+}
+
+static mrb_value
+mrb_sdl2_audio_audiodata_get_spec(mrb_state *mrb, mrb_value self)
+{
+  return mrb_iv_get(mrb, self, mrb_intern2(mrb, "spec", 4));
+}
+
+static mrb_value
+mrb_sdl2_audio_audiodata_get_buffer(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_audio_audiodata_data_t *data =
+    (mrb_sdl2_audio_audiodata_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_audio_audiodata_data_type);
+  return mrb_cptr_value(mrb, data->buf);
+}
+
+static mrb_value
+mrb_sdl2_audio_audiodata_get_length(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_audio_audiodata_data_t *data =
+    (mrb_sdl2_audio_audiodata_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_audio_audiodata_data_type);
+  return mrb_fixnum_value(data->len);
+}
+
 
 void
 mruby_sdl2_audio_init(mrb_state *mrb)
@@ -781,10 +862,12 @@ mruby_sdl2_audio_init(mrb_state *mrb)
   class_AudioCVT    = mrb_define_class_under(mrb, mod_Audio, "AudioCVT",    mrb->object_class);
   class_AudioSpec   = mrb_define_class_under(mrb, mod_Audio, "AudioSpec",   mrb->object_class);
   class_AudioDevice = mrb_define_class_under(mrb, mod_Audio, "AudioDevice", mrb->object_class);
+  class_AudioData   = mrb_define_class_under(mrb, mod_Audio, "AudioData",   mrb->object_class);
 
   MRB_SET_INSTANCE_TT(class_AudioCVT,    MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_AudioSpec,   MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_AudioDevice, MRB_TT_DATA);
+  MRB_SET_INSTANCE_TT(class_AudioData,   MRB_TT_DATA);
 
   mrb_define_module_function(mrb, mod_Audio, "init",           mrb_sdl2_audio_init,               ARGS_REQ(1));
   mrb_define_module_function(mrb, mod_Audio, "quit",           mrb_sdl2_audio_quit,               ARGS_NONE());
@@ -815,7 +898,6 @@ mruby_sdl2_audio_init(mrb_state *mrb)
   mrb_define_method(mrb, class_AudioSpec, "callback=",  mrb_sdl2_audio_audiospec_set_callback, ARGS_BLOCK());
   mrb_define_method(mrb, class_AudioSpec, "userdata",   mrb_sdl2_audio_audiospec_get_userdata, ARGS_NONE());
   mrb_define_method(mrb, class_AudioSpec, "userdata=",  mrb_sdl2_audio_audiospec_set_userdata, ARGS_REQ(1));
-  mrb_define_class_method(mrb, class_AudioSpec, "load_wav", mrb_sdl2_audio_audiospec_load_wav, ARGS_REQ(1));
 
   mrb_define_method(mrb, class_AudioCVT, "initialize", mrb_sdl2_audio_audiocvt_initialize, ARGS_REQ(4));
   mrb_define_method(mrb, class_AudioCVT, "convert",    mrb_sdl2_audio_audiocvt_convert,    ARGS_NONE());
@@ -827,6 +909,12 @@ mruby_sdl2_audio_init(mrb_state *mrb)
   mrb_define_method(mrb, class_AudioDevice, "lock",       mrb_sdl2_audio_audiodevice_lock,       ARGS_NONE());
   mrb_define_method(mrb, class_AudioDevice, "unlock",     mrb_sdl2_audio_audiodevice_unlock,     ARGS_NONE());
   mrb_define_method(mrb, class_AudioDevice, "status",     mrb_sdl2_audio_audiodevice_get_status, ARGS_NONE());
+
+  mrb_define_method(mrb, class_AudioData, "initialize", mrb_sdl2_audio_audiodata_initialize, ARGS_REQ(1));
+  mrb_define_method(mrb, class_AudioData, "destroy",    mrb_sdl2_audio_audiodata_destroy,    ARGS_NONE());
+  mrb_define_method(mrb, class_AudioData, "spec",       mrb_sdl2_audio_audiodata_get_spec,   ARGS_NONE());
+  mrb_define_method(mrb, class_AudioData, "buffer",     mrb_sdl2_audio_audiodata_get_buffer, ARGS_NONE());
+  mrb_define_method(mrb, class_AudioData, "length",     mrb_sdl2_audio_audiodata_get_length, ARGS_NONE());
 
   /* SDL_AudioFormat */
   mrb_define_const(mrb, mod_Audio, "AUDIO_S8",     mrb_fixnum_value(AUDIO_S8));
