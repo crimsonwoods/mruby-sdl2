@@ -1,8 +1,7 @@
 SDL2::init
 
 # Please modify the path.
-#PATH_TO_SAMPLE_WAV = "/path/to/your/sample.wav"
-PATH_TO_SAMPLE_WAV = "../mruby-sdl2/samples/sample.wav"
+PATH_TO_SAMPLE_WAV = "/path/to/your/sample.wav"
 
 def format_to_s(fmt)
   case fmt
