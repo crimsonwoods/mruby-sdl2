@@ -2,6 +2,8 @@
 #include "sdl2_video.h"
 #include "sdl2_rect.h"
 #include "sdl2_audio.h"
+#include "sdl2_events.h"
+#include "sdl2_keyboard.h"
 #include "misc.h"
 #include "mruby/string.h"
 #include <SDL2/SDL.h>
@@ -134,6 +136,8 @@ mrb_mruby_sdl2_gem_init(mrb_state *mrb)
   mruby_sdl2_video_init(mrb);
   mruby_sdl2_rect_init(mrb);
   mruby_sdl2_audio_init(mrb);
+  mruby_sdl2_events_init(mrb);
+  mruby_sdl2_keyboard_init(mrb);
   mruby_sdl2_misc_init(mrb);
 }
 
@@ -141,6 +145,8 @@ void
 mrb_mruby_sdl2_gem_final(mrb_state *mrb)
 {
   mruby_sdl2_misc_final(mrb);
+  mruby_sdl2_keyboard_final(mrb);
+  mruby_sdl2_events_final(mrb);
   mruby_sdl2_audio_final(mrb);
   mruby_sdl2_rect_final(mrb);
   mruby_sdl2_video_final(mrb);
