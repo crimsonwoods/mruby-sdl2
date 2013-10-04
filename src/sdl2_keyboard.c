@@ -72,9 +72,7 @@ mrb_sdl2_keyboard_key_name(mrb_state *mrb, mrb_value mod)
 {
   mrb_int key;
   mrb_get_args(mrb, "i", &key);
-  char const * const name = SDL_GetKeyName((SDL_Keycode)key);
-printf("key_name = %c\n", name[0]);
-  return mrb_str_new_cstr(mrb, name);
+  return mrb_str_new_cstr(mrb, SDL_GetKeyName((SDL_Keycode)key));
 }
 
 static mrb_value
