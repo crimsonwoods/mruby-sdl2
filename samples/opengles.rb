@@ -1,5 +1,11 @@
 SDL2::init
 
+if !Object.const_defined?(:GL2) then
+  puts "Note: This mruby does not support OpenGL ES!"
+  puts "Note: Get mruby-gles from \"https://github.com/crimsonwoods/mruby-gles/tree/fix_for_compile_on_Ubuntu\"."
+  raise StandardError, "OpenGL ES is not supported."
+end
+
 X = SDL2::Video::Window::SDL_WINDOWPOS_UNDEFINED
 Y = SDL2::Video::Window::SDL_WINDOWPOS_UNDEFINED
 W = 640
