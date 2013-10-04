@@ -21,6 +21,7 @@ typedef struct mrb_sdl2_video_displaymode_data_t {
 } mrb_sdl2_video_displaymode_data_t;
 
 typedef struct mrb_sdl2_video_window_data_t {
+  bool        is_associated;
   SDL_Window *window;
 } mrb_sdl2_video_window_data_t;
 
@@ -44,7 +45,7 @@ mrb_sdl2_video_window_data_free(mrb_state *mrb, void *p)
   mrb_sdl2_video_window_data_t *data =
     (mrb_sdl2_video_window_data_t*)p;
   if (NULL != data) {
-    if (NULL != data->window) {
+    if ((!data->is_associated) && (NULL != data->window)) {
       SDL_DestroyWindow(data->window);
     }
     mrb_free(mrb, data);
@@ -95,6 +96,20 @@ mrb_sdl2_video_window(mrb_state *mrb, SDL_Window *window)
   if (NULL != data) {
     mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
   }
+  data->is_associated = false;
+  data->window = window;
+  return mrb_obj_value(Data_Wrap_Struct(mrb, class_Window, &mrb_sdl2_video_window_data_type, data));
+}
+
+mrb_value
+mrb_sdl2_video_associated_window(mrb_state *mrb, SDL_Window *window)
+{
+  mrb_sdl2_video_window_data_t *data =
+    (mrb_sdl2_video_window_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_video_window_data_t));
+  if (NULL != data) {
+    mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+  }
+  data->is_associated = true;
   data->window = window;
   return mrb_obj_value(Data_Wrap_Struct(mrb, class_Window, &mrb_sdl2_video_window_data_type, data));
 }
@@ -321,11 +336,13 @@ mrb_sdl2_video_window_initialize(mrb_state *mrb, mrb_value self)
     }
   }
   if (6 == argc) {
+    data->is_associated = false;
     data->window = SDL_CreateWindow(RSTRING_PTR(title), x, y, w, h, flags);
     if (NULL == data->window) {
       mruby_sdl2_raise_error(mrb);
     }
   } else {
+    data->is_associated = false;
     data->window = NULL;
   }
   DATA_PTR(self) = data;

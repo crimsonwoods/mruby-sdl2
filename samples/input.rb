@@ -1,43 +1,5 @@
 def scancode_to_s(code)
-  case code
-  when SDL2::Input::SDL_SCANCODE_0 then "0"
-  when SDL2::Input::SDL_SCANCODE_1 then "1"
-  when SDL2::Input::SDL_SCANCODE_2 then "2"
-  when SDL2::Input::SDL_SCANCODE_3 then "3"
-  when SDL2::Input::SDL_SCANCODE_4 then "4"
-  when SDL2::Input::SDL_SCANCODE_5 then "5"
-  when SDL2::Input::SDL_SCANCODE_6 then "6"
-  when SDL2::Input::SDL_SCANCODE_7 then "7"
-  when SDL2::Input::SDL_SCANCODE_8 then "8"
-  when SDL2::Input::SDL_SCANCODE_9 then "9"
-  when SDL2::Input::SDL_SCANCODE_A then "A"
-  when SDL2::Input::SDL_SCANCODE_B then "B"
-  when SDL2::Input::SDL_SCANCODE_C then "C"
-  when SDL2::Input::SDL_SCANCODE_D then "D"
-  when SDL2::Input::SDL_SCANCODE_E then "E"
-  when SDL2::Input::SDL_SCANCODE_F then "F"
-  when SDL2::Input::SDL_SCANCODE_G then "G"
-  when SDL2::Input::SDL_SCANCODE_H then "H"
-  when SDL2::Input::SDL_SCANCODE_I then "I"
-  when SDL2::Input::SDL_SCANCODE_J then "J"
-  when SDL2::Input::SDL_SCANCODE_K then "K"
-  when SDL2::Input::SDL_SCANCODE_L then "L"
-  when SDL2::Input::SDL_SCANCODE_M then "M"
-  when SDL2::Input::SDL_SCANCODE_N then "N"
-  when SDL2::Input::SDL_SCANCODE_O then "O"
-  when SDL2::Input::SDL_SCANCODE_P then "P"
-  when SDL2::Input::SDL_SCANCODE_Q then "Q"
-  when SDL2::Input::SDL_SCANCODE_R then "R"
-  when SDL2::Input::SDL_SCANCODE_S then "S"
-  when SDL2::Input::SDL_SCANCODE_T then "T"
-  when SDL2::Input::SDL_SCANCODE_U then "U"
-  when SDL2::Input::SDL_SCANCODE_V then "V"
-  when SDL2::Input::SDL_SCANCODE_W then "W"
-  when SDL2::Input::SDL_SCANCODE_X then "X"
-  when SDL2::Input::SDL_SCANCODE_Y then "Y"
-  when SDL2::Input::SDL_SCANCODE_Z then "Z"
-  else "?"
-  end
+  SDL2::Input::Keyboard::scancode_name(code)
 end
 
 def windowevent_to_s(event)
@@ -80,6 +42,8 @@ begin
         "mouse button down: "
       when SDL2::Input::SDL_MOUSEBUTTONUP then
         "mouse button up: "
+      when SDL2::Input::SDL_QUIT then
+        "quit"
       else
         "?: #{ev.to_s}"
       end

@@ -195,6 +195,47 @@ mrb_sdl2_input_event_get_type(mrb_state *mrb, mrb_value self)
   return mrb_fixnum_value(data->event.type);
 }
 
+static mrb_value
+mrb_sdl2_input_event_state(mrb_state *mrb, mrb_value self)
+{
+  mrb_int type, state;
+  mrb_get_args(mrb, "ii", &type, &state);
+  return mrb_fixnum_value(SDL_EventState(type, state));
+}
+
+static mrb_value
+mrb_sdl2_input_flush_event(mrb_state *mrb, mrb_value self)
+{
+  mrb_int min, max;
+  int const argc = mrb_get_args(mrb, "i|i", &min, &max);
+  if (1 == argc) {
+    SDL_FlushEvent(min);
+  } else {
+    SDL_FlushEvents(min, max);
+  }
+  return self;
+}
+
+static mrb_value
+mrb_sdl2_input_has_events(mrb_state *mrb, mrb_value self)
+{
+  mrb_int min, max;
+  int const argc = mrb_get_args(mrb, "i|i", &min, &max);
+  SDL_bool has_event;
+  if (1 == argc) {
+    has_event = SDL_HasEvent(min);
+  } else {
+    has_event = SDL_HasEvents(min, max);
+  }
+  return (SDL_FALSE == has_event) ? mrb_false_value() : mrb_true_value();
+}
+
+static mrb_value
+mrb_sdl2_input_is_quit_requested(mrb_state *mrb, mrb_value self)
+{
+  return (SDL_FALSE == SDL_QuitRequested()) ? mrb_false_value() : mrb_true_value();
+}
+
 /***************************************************************************
 *
 * class SDL2::Input::KeyboardEvent
@@ -535,12 +576,16 @@ mruby_sdl2_events_init(mrb_state *mrb)
   MRB_SET_INSTANCE_TT(class_TextEditingEvent,      MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_TextInputEvent,        MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_TouchFingerEvent,      MRB_TT_DATA);
-  MRB_SET_INSTANCE_TT(class_UserEvent,          MRB_TT_DATA);
-  MRB_SET_INSTANCE_TT(class_WindowEvent,        MRB_TT_DATA);
+  MRB_SET_INSTANCE_TT(class_UserEvent,             MRB_TT_DATA);
+  MRB_SET_INSTANCE_TT(class_WindowEvent,           MRB_TT_DATA);
 
-  mrb_define_module_function(mrb, mod_Input, "poll",         mrb_sdl2_input_poll,         ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Input, "wait",         mrb_sdl2_input_wait,         ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Input, "wait_timeout", mrb_sdl2_input_wait_timeout, ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Input, "poll",            mrb_sdl2_input_poll,              ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Input, "wait",            mrb_sdl2_input_wait,              ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Input, "wait_timeout",    mrb_sdl2_input_wait_timeout,      ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Input, "event_state",     mrb_sdl2_input_event_state,       ARGS_REQ(2));
+  mrb_define_module_function(mrb, mod_Input, "flush",           mrb_sdl2_input_flush_event,       ARGS_REQ(1) | ARGS_OPT(1));
+  mrb_define_module_function(mrb, mod_Input, "has_events?",     mrb_sdl2_input_has_events,        ARGS_REQ(1) | ARGS_OPT(1));
+  mrb_define_module_function(mrb, mod_Input, "quit_requested?", mrb_sdl2_input_is_quit_requested, ARGS_NONE());
 
   mrb_define_method(mrb, class_Event, "type", mrb_sdl2_input_event_get_type, ARGS_NONE());
 
@@ -640,6 +685,12 @@ mruby_sdl2_events_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Input, "SDL_WINDOWEVENT_FOCUS_GAINED", mrb_fixnum_value(SDL_WINDOWEVENT_FOCUS_GAINED));
   mrb_define_const(mrb, mod_Input, "SDL_WINDOWEVENT_FOCUS_LOST",   mrb_fixnum_value(SDL_WINDOWEVENT_FOCUS_LOST));
   mrb_define_const(mrb, mod_Input, "SDL_WINDOWEVENT_CLOSE",        mrb_fixnum_value(SDL_WINDOWEVENT_CLOSE));
+
+  /* Event state */
+  mrb_define_const(mrb, mod_Input, "SDL_QUERY",   mrb_fixnum_value(SDL_QUERY));
+  mrb_define_const(mrb, mod_Input, "SDL_IGNORE",  mrb_fixnum_value(SDL_IGNORE));
+  mrb_define_const(mrb, mod_Input, "SDL_DISABLE", mrb_fixnum_value(SDL_DISABLE));
+  mrb_define_const(mrb, mod_Input, "SDL_ENABLE",  mrb_fixnum_value(SDL_ENABLE));
 }
 
 void
