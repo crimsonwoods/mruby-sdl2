@@ -4,6 +4,7 @@
 #include "sdl2_audio.h"
 #include "sdl2_events.h"
 #include "sdl2_keyboard.h"
+#include "sdl2_mouse.h"
 #include "misc.h"
 #include "mruby/string.h"
 #include <SDL2/SDL.h>
@@ -132,13 +133,35 @@ mruby_sdl2_module_final(mrb_state *mrb)
 void
 mrb_mruby_sdl2_gem_init(mrb_state *mrb)
 {
-  int const arena_size = mrb_gc_arena_save(mrb);
+  int arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_module_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
+
+  arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_video_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
+
+  arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_rect_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
+
+  arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_audio_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
+
+  arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_events_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
+
+  arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_keyboard_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
+
+  arena_size = mrb_gc_arena_save(mrb);
+  mruby_sdl2_mouse_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
+
+  arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_misc_init(mrb);
   mrb_gc_arena_restore(mrb, arena_size);
 }
@@ -147,6 +170,7 @@ void
 mrb_mruby_sdl2_gem_final(mrb_state *mrb)
 {
   mruby_sdl2_misc_final(mrb);
+  mruby_sdl2_mouse_final(mrb);
   mruby_sdl2_keyboard_final(mrb);
   mruby_sdl2_events_final(mrb);
   mruby_sdl2_audio_final(mrb);
