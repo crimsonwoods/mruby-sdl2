@@ -207,6 +207,8 @@ mruby_sdl2_keyboard_init(mrb_state *mrb)
   mrb_define_method(mrb, class_Keysym, "symbol",   mrb_sdl2_keyboard_keysym_get_symbol,   ARGS_NONE());
   mrb_define_method(mrb, class_Keysym, "modifier", mrb_sdl2_keyboard_keysym_get_modifier, ARGS_NONE());
 
+  int arena_size = mrb_gc_arena_save(mrb);
+
   /* SDL_Scancode */
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_0", mrb_fixnum_value(SDL_SCANCODE_0));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_1", mrb_fixnum_value(SDL_SCANCODE_1));
@@ -244,6 +246,10 @@ mruby_sdl2_keyboard_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_X", mrb_fixnum_value(SDL_SCANCODE_X));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_Y", mrb_fixnum_value(SDL_SCANCODE_Y));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_Z", mrb_fixnum_value(SDL_SCANCODE_Z));
+
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_F1", mrb_fixnum_value(SDL_SCANCODE_F1));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_F2", mrb_fixnum_value(SDL_SCANCODE_F2));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_F3", mrb_fixnum_value(SDL_SCANCODE_F3));
@@ -268,6 +274,10 @@ mruby_sdl2_keyboard_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_F22", mrb_fixnum_value(SDL_SCANCODE_F22));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_F23", mrb_fixnum_value(SDL_SCANCODE_F23));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_F24", mrb_fixnum_value(SDL_SCANCODE_F24));
+
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_BACKSPACE",   mrb_fixnum_value(SDL_SCANCODE_BACKSPACE));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_CAPSLOCK",    mrb_fixnum_value(SDL_SCANCODE_CAPSLOCK));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_DELETE",      mrb_fixnum_value(SDL_SCANCODE_DELETE));
@@ -288,7 +298,10 @@ mruby_sdl2_keyboard_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_RIGHT",       mrb_fixnum_value(SDL_SCANCODE_RIGHT));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_RSHIFT",      mrb_fixnum_value(SDL_SCANCODE_RSHIFT));
   mrb_define_const(mrb, mod_Keyboard, "SDL_SCANCODE_UNKNOWN",     mrb_fixnum_value(SDL_SCANCODE_UNKNOWN));
- 
+
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   /* SDL_Keycode */
   mrb_define_const(mrb, mod_Keyboard, "SDLK_0", mrb_fixnum_value(SDLK_0));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_1", mrb_fixnum_value(SDLK_1));
@@ -326,6 +339,10 @@ mruby_sdl2_keyboard_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Keyboard, "SDLK_X", mrb_fixnum_value(SDLK_x));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_Y", mrb_fixnum_value(SDLK_y));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_Z", mrb_fixnum_value(SDLK_z));
+
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   mrb_define_const(mrb, mod_Keyboard, "SDLK_F1", mrb_fixnum_value(SDLK_F1));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_F2", mrb_fixnum_value(SDLK_F2));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_F3", mrb_fixnum_value(SDLK_F3));
@@ -350,6 +367,10 @@ mruby_sdl2_keyboard_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Keyboard, "SDLK_F22", mrb_fixnum_value(SDLK_F22));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_F23", mrb_fixnum_value(SDLK_F23));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_F24", mrb_fixnum_value(SDLK_F24));
+
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   mrb_define_const(mrb, mod_Keyboard, "SDLK_BACKSPACE",   mrb_fixnum_value(SDLK_BACKSPACE));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_CAPSLOCK",    mrb_fixnum_value(SDLK_CAPSLOCK));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_DELETE",      mrb_fixnum_value(SDLK_DELETE));
@@ -388,6 +409,9 @@ mruby_sdl2_keyboard_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Keyboard, "SDLK_UNDERSCORE",  mrb_fixnum_value(SDLK_UNDERSCORE));
   mrb_define_const(mrb, mod_Keyboard, "SDLK_UNKNOWN",     mrb_fixnum_value(SDLK_UNKNOWN));
 
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   /* SDL_Keymod */
   mrb_define_const(mrb, mod_Keyboard, "KMOD_NONE",   mrb_fixnum_value(KMOD_NONE));
   mrb_define_const(mrb, mod_Keyboard, "KMOD_LSHIFT", mrb_fixnum_value(KMOD_LSHIFT));
@@ -405,6 +429,8 @@ mruby_sdl2_keyboard_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Keyboard, "KMOD_SHIFT",  mrb_fixnum_value(KMOD_SHIFT));
   mrb_define_const(mrb, mod_Keyboard, "KMOD_ALT",    mrb_fixnum_value(KMOD_ALT));
   mrb_define_const(mrb, mod_Keyboard, "KMOD_GUI",    mrb_fixnum_value(KMOD_GUI));
+
+  mrb_gc_arena_restore(mrb, arena_size);
 }
 
 void

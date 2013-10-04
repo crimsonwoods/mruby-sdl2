@@ -911,11 +911,16 @@ mruby_sdl2_video_init(mrb_state *mrb)
   mrb_define_method(mrb, class_GLContext, "delete",     mrb_sdl2_video_glcontext_delete,     ARGS_NONE());
   mrb_define_method(mrb, class_GLContext, "destroy",    mrb_sdl2_video_glcontext_delete,     ARGS_NONE());
 
+  int arena_size = mrb_gc_arena_save(mrb);
+
   /* SDL_BlendMode */
   mrb_define_const(mrb, mod_Video, "SDL_BLENDMODE_NONE",  mrb_fixnum_value(SDL_BLENDMODE_NONE));
   mrb_define_const(mrb, mod_Video, "SDL_BLENDMODE_BLEND", mrb_fixnum_value(SDL_BLENDMODE_BLEND));
   mrb_define_const(mrb, mod_Video, "SDL_BLENDMODE_ADD",   mrb_fixnum_value(SDL_BLENDMODE_ADD));
   mrb_define_const(mrb, mod_Video, "SDL_BLENDMODE_MOD",   mrb_fixnum_value(SDL_BLENDMODE_MOD));
+
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
 
   /* SDL_WindowFlags */
   mrb_define_const(mrb, class_Window, "SDL_WINDOW_FULLSCREEN",         mrb_fixnum_value(SDL_WINDOW_FULLSCREEN));
@@ -934,6 +939,9 @@ mruby_sdl2_video_init(mrb_state *mrb)
 
   mrb_define_const(mrb, class_Window, "SDL_WINDOWPOS_CENTERED",  mrb_fixnum_value(SDL_WINDOWPOS_CENTERED));
   mrb_define_const(mrb, class_Window, "SDL_WINDOWPOS_UNDEFINED", mrb_fixnum_value(SDL_WINDOWPOS_UNDEFINED));
+
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
 
   /* SDL_GLattr */
   mrb_define_const(mrb, mod_GL, "SDL_GL_RED_SIZE",                   mrb_fixnum_value(SDL_GL_RED_SIZE));
@@ -959,6 +967,9 @@ mruby_sdl2_video_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_GL, "SDL_GL_CONTEXT_PROFILE_MASK",       mrb_fixnum_value(SDL_GL_CONTEXT_PROFILE_MASK));
   mrb_define_const(mrb, mod_GL, "SDL_GL_SHARE_WITH_CURRENT_CONTEXT", mrb_fixnum_value(SDL_GL_SHARE_WITH_CURRENT_CONTEXT));
 
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   /* SDL_GLcontextFlag */
   mrb_define_const(mrb, mod_GL, "SDL_GL_CONTEXT_DEBUG_FLAG",              mrb_fixnum_value(SDL_GL_CONTEXT_DEBUG_FLAG));
   mrb_define_const(mrb, mod_GL, "SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG", mrb_fixnum_value(SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG));
@@ -970,8 +981,13 @@ mruby_sdl2_video_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_GL, "SDL_GL_CONTEXT_PROFILE_COMPATIBILITY", mrb_fixnum_value(SDL_GL_CONTEXT_PROFILE_COMPATIBILITY));
   mrb_define_const(mrb, mod_GL, "SDL_GL_CONTEXT_PROFILE_ES",            mrb_fixnum_value(SDL_GL_CONTEXT_PROFILE_ES));
 
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   mruby_sdl2_video_renderer_init(mrb, mod_Video);
   mruby_sdl2_video_surface_init(mrb, mod_Video);
+
+  mrb_gc_arena_restore(mrb, arena_size);
 }
 
 void

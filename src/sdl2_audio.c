@@ -916,6 +916,8 @@ mruby_sdl2_audio_init(mrb_state *mrb)
   mrb_define_method(mrb, class_AudioData, "buffer",     mrb_sdl2_audio_audiodata_get_buffer, ARGS_NONE());
   mrb_define_method(mrb, class_AudioData, "length",     mrb_sdl2_audio_audiodata_get_length, ARGS_NONE());
 
+  int arena_size = mrb_gc_arena_save(mrb);
+
   /* SDL_AudioFormat */
   mrb_define_const(mrb, mod_Audio, "AUDIO_S8",     mrb_fixnum_value(AUDIO_S8));
   mrb_define_const(mrb, mod_Audio, "AUDIO_U8",     mrb_fixnum_value(AUDIO_U8));
@@ -936,6 +938,9 @@ mruby_sdl2_audio_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Audio, "AUDIO_F32SYS", mrb_fixnum_value(AUDIO_F32SYS));
   mrb_define_const(mrb, mod_Audio, "AUDIO_F32",    mrb_fixnum_value(AUDIO_F32));
 
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   /* SDL_AudioStatus */
   mrb_define_const(mrb, mod_Audio, "SDL_AUDIO_STOPPED", mrb_fixnum_value(SDL_AUDIO_STOPPED));
   mrb_define_const(mrb, mod_Audio, "SDL_AUDIO_PLAYING", mrb_fixnum_value(SDL_AUDIO_PLAYING));
@@ -945,6 +950,8 @@ mruby_sdl2_audio_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Audio, "SDL_AUDIO_ALLOW_FORMAT_CHANGE",    mrb_fixnum_value(SDL_AUDIO_ALLOW_FORMAT_CHANGE));
   mrb_define_const(mrb, mod_Audio, "SDL_AUDIO_ALLOW_CHANNELS_CHANGE",  mrb_fixnum_value(SDL_AUDIO_ALLOW_CHANNELS_CHANGE));
   mrb_define_const(mrb, mod_Audio, "SDL_AUDIO_ALLOW_ANY_CHANGE",       mrb_fixnum_value(SDL_AUDIO_ALLOW_ANY_CHANGE));
+
+  mrb_gc_arena_restore(mrb, arena_size);
 }
 
 void

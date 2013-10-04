@@ -132,6 +132,7 @@ mruby_sdl2_module_final(mrb_state *mrb)
 void
 mrb_mruby_sdl2_gem_init(mrb_state *mrb)
 {
+  int const arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_module_init(mrb);
   mruby_sdl2_video_init(mrb);
   mruby_sdl2_rect_init(mrb);
@@ -139,6 +140,7 @@ mrb_mruby_sdl2_gem_init(mrb_state *mrb)
   mruby_sdl2_events_init(mrb);
   mruby_sdl2_keyboard_init(mrb);
   mruby_sdl2_misc_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
 }
 
 void

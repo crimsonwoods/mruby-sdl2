@@ -15,7 +15,6 @@ build_config.rb:
 
     conf.cc do |cc|
       cc.include_paths << "/path/to/your/SDL2/include"
-      cc.defines = %w(MRB_ARENA_SIZE=500)
     end
 
     conf.linker do |linker|

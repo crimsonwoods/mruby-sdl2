@@ -626,6 +626,8 @@ mruby_sdl2_events_init(mrb_state *mrb)
   mrb_define_method(mrb, class_WindowEvent, "data1",     mrb_sdl2_input_windowevent_get_data1,     ARGS_NONE());
   mrb_define_method(mrb, class_WindowEvent, "data2",     mrb_sdl2_input_windowevent_get_data2,     ARGS_NONE());
 
+  int arena_size = mrb_gc_arena_save(mrb);
+
   /* SDL_EventType */
   mrb_define_const(mrb, mod_Input, "SDL_FIRSTEVENT",               mrb_fixnum_value(SDL_FIRSTEVENT));
   mrb_define_const(mrb, mod_Input, "SDL_QUIT",                     mrb_fixnum_value(SDL_QUIT));
@@ -669,6 +671,9 @@ mruby_sdl2_events_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Input, "SDL_USEREVENT",                mrb_fixnum_value(SDL_USEREVENT));
   mrb_define_const(mrb, mod_Input, "SDL_LASTEVENT",                mrb_fixnum_value(SDL_LASTEVENT));
 
+  mrb_gc_arena_restore(mrb, arena_size);
+  arena_size = mrb_gc_arena_save(mrb);
+
   /* SDL_WindowEventID */
   mrb_define_const(mrb, mod_Input, "SDL_WINDOWEVENT_NONE",         mrb_fixnum_value(SDL_WINDOWEVENT_NONE));
   mrb_define_const(mrb, mod_Input, "SDL_WINDOWEVENT_SHOWN",        mrb_fixnum_value(SDL_WINDOWEVENT_SHOWN));
@@ -691,6 +696,8 @@ mruby_sdl2_events_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Input, "SDL_IGNORE",  mrb_fixnum_value(SDL_IGNORE));
   mrb_define_const(mrb, mod_Input, "SDL_DISABLE", mrb_fixnum_value(SDL_DISABLE));
   mrb_define_const(mrb, mod_Input, "SDL_ENABLE",  mrb_fixnum_value(SDL_ENABLE));
+
+  mrb_gc_arena_restore(mrb, arena_size);
 }
 
 void
