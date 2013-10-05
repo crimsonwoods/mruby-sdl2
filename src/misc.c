@@ -243,9 +243,9 @@ mruby_sdl2_misc_init(mrb_state *mrb)
   mrb_define_method(mrb, class_Buffer, "size",       mrb_sdl2_misc_buffer_get_size,    ARGS_NONE());
   mrb_define_method(mrb, class_Buffer, "cptr",       mrb_sdl2_misc_buffer_get_cptr,    ARGS_NONE());
 
-  mrb_define_method(mrb, class_FloatBuffer, "size",       mrb_sdl2_misc_floatbuffer_get_size,    ARGS_NONE());
-  mrb_define_method(mrb, class_FloatBuffer, "[]",         mrb_sdl2_misc_floatbuffer_get_at,      ARGS_REQ(1));
-  mrb_define_method(mrb, class_FloatBuffer, "[]=",        mrb_sdl2_misc_floatbuffer_set_at,      ARGS_REQ(2));
+  mrb_define_method(mrb, class_FloatBuffer, "size", mrb_sdl2_misc_floatbuffer_get_size, ARGS_NONE());
+  mrb_define_method(mrb, class_FloatBuffer, "[]",   mrb_sdl2_misc_floatbuffer_get_at,   ARGS_REQ(1));
+  mrb_define_method(mrb, class_FloatBuffer, "[]=",  mrb_sdl2_misc_floatbuffer_set_at,   ARGS_REQ(2));
 }
 
 void
