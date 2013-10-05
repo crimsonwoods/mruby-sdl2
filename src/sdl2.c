@@ -1,4 +1,5 @@
 #include "sdl2.h"
+#include "sdl2_version.h"
 #include "sdl2_video.h"
 #include "sdl2_rect.h"
 #include "sdl2_audio.h"
@@ -138,6 +139,10 @@ mrb_mruby_sdl2_gem_init(mrb_state *mrb)
   mrb_gc_arena_restore(mrb, arena_size);
 
   arena_size = mrb_gc_arena_save(mrb);
+  mruby_sdl2_version_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
+
+  arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_video_init(mrb);
   mrb_gc_arena_restore(mrb, arena_size);
 
@@ -176,6 +181,7 @@ mrb_mruby_sdl2_gem_final(mrb_state *mrb)
   mruby_sdl2_audio_final(mrb);
   mruby_sdl2_rect_final(mrb);
   mruby_sdl2_video_final(mrb);
+  mruby_sdl2_version_final(mrb);
   mruby_sdl2_module_final(mrb);
 }
 
