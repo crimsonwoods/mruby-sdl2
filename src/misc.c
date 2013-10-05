@@ -6,6 +6,7 @@
 
 static struct RClass *class_Buffer = NULL;
 static struct RClass *class_FloatBuffer = NULL;
+static struct RClass *class_ByteBuffer = NULL;
 
 typedef struct mrb_sdl2_misc_buffer_data_t {
   void  *buffer;
@@ -132,25 +133,25 @@ mrb_sdl2_misc_buffer_initialize(mrb_state *mrb, mrb_value self)
         break;
       case MRB_TT_STRING:
         if (item_type == MRB_TT_FLOAT) {
-          ((float*)data->buffer)[i] = mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
+          ((float*)data->buffer)[i] = mrb_float(mrb_funcall(mrb, item, "to_f", 0));
         } else if (item_type == MRB_TT_FLOAT) {
-          ((int32_t*)data->buffer)[i] = mrb_fixnum(mrb_funcall(mrb, arg, "to_i", 0));
+          ((int32_t*)data->buffer)[i] = mrb_fixnum(mrb_funcall(mrb, item, "to_i", 0));
         } else {
-          ((float*)data->buffer)[i] = mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
+          ((float*)data->buffer)[i] = mrb_float(mrb_funcall(mrb, item, "to_f", 0));
           item_type = MRB_TT_FLOAT;
         }
         break;
       default:
         if (item_type == MRB_TT_FLOAT) {
-          ((float*)data->buffer)[i] = mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
+          ((float*)data->buffer)[i] = mrb_float(mrb_funcall(mrb, item, "to_f", 0));
         } else if (item_type == MRB_TT_FLOAT) {
-          ((int32_t*)data->buffer)[i] = mrb_fixnum(mrb_funcall(mrb, arg, "to_i", 0));
+          ((int32_t*)data->buffer)[i] = mrb_fixnum(mrb_funcall(mrb, item, "to_i", 0));
         } else {
-          if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_f", 4))) {
-            ((float*)data->buffer)[i] = mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
+          if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_f", 4))) {
+            ((float*)data->buffer)[i] = mrb_float(mrb_funcall(mrb, item, "to_f", 0));
             item_type = MRB_TT_FLOAT;
-          } else if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_i", 4))) {
-            ((int32_t*)data->buffer)[i] = mrb_fixnum(mrb_funcall(mrb, arg, "to_i", 0));
+          } else if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_i", 4))) {
+            ((int32_t*)data->buffer)[i] = mrb_fixnum(mrb_funcall(mrb, item, "to_i", 0));
             item_type = MRB_TT_FIXNUM;
           } else {
             mrb_free(mrb, data->buffer);
@@ -229,14 +230,142 @@ mrb_sdl2_misc_floatbuffer_set_at(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+
+static mrb_value
+mrb_sdl2_misc_bytebuffer_initialize(mrb_state *mrb, mrb_value self)
+{
+  mrb_value arg;
+  mrb_get_args(mrb, "o", &arg);
+
+  mrb_sdl2_misc_buffer_data_t *data =
+    (mrb_sdl2_misc_buffer_data_t*)DATA_PTR(self);
+
+  if (NULL == data) {
+    data = (mrb_sdl2_misc_buffer_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_misc_buffer_data_t));
+    if (NULL == data) {
+      mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+    }
+    data->buffer = NULL;
+    data->size   = 0;
+  }
+
+  enum mrb_vtype const arg_type = mrb_type(arg);
+  switch (arg_type) {
+  case MRB_TT_FIXNUM:
+    data->size = (size_t)mrb_fixnum(arg);
+    break;
+  case MRB_TT_FLOAT:
+    data->size = (size_t)mrb_float(arg);
+    break;
+  case MRB_TT_STRING:
+    data->size = (size_t)mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
+    break;
+  case MRB_TT_ARRAY:
+    {
+      mrb_int const n = mrb_ary_len(mrb, arg);
+      if (0 == n) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "cannot accept empty array.");
+      }
+      data->size = n * sizeof(uint8_t);
+    }
+    break;
+  default:
+    if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_f", 4))) {
+      data->size = (size_t)mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
+    } else if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_i", 4))) {
+      data->size = (size_t)mrb_fixnum(mrb_funcall(mrb, arg, "to_i", 0));
+    } else {
+      mrb_raise(mrb, E_TYPE_ERROR, "expected Fixnum/Float/String/Array or comvertible type");
+    }
+    break;
+  }
+
+  data->buffer = mrb_malloc(mrb, data->size);
+  if (NULL == data->buffer) {
+    mrb_free(mrb, data);
+    mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+  }
+
+  if (arg_type == MRB_TT_ARRAY) {
+    mrb_int const n = mrb_ary_len(mrb, arg);
+    mrb_int i;
+    for (i = 0; i < n; ++i) {
+      mrb_value const item = mrb_ary_ref(mrb, arg, i);
+      switch (mrb_type(item)) {
+      case MRB_TT_FIXNUM:
+        ((uint8_t*)data->buffer)[i] = (uint8_t)(mrb_fixnum(item) & 0xffu);
+        break;
+      case MRB_TT_FLOAT:
+        ((uint8_t*)data->buffer)[i] = (uint8_t)((uint32_t)mrb_float(item) & 0xffu);
+        break;
+      case MRB_TT_STRING:
+        ((uint8_t*)data->buffer)[i] = (uint8_t)((uint32_t)mrb_float(mrb_funcall(mrb, item, "to_f", 0)) & 0xffu);
+        break;
+      default:
+        if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_f", 4))) {
+          ((uint8_t*)data->buffer)[i] = (uint8_t)((uint32_t)mrb_float(mrb_funcall(mrb, item, "to_f", 0)) & 0xffu);
+        } else if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_i", 4))) {
+          ((uint8_t*)data->buffer)[i] = (uint8_t)(mrb_fixnum(mrb_funcall(mrb, item, "to_i", 0)) & 0xffu);
+        } else {
+          mrb_free(mrb, data->buffer);
+          mrb_free(mrb, data);
+          mrb_raise(mrb, E_TYPE_ERROR, "expected Fixnum/Float/String or convertible type");
+        }
+        break;
+      }
+    }
+  }
+
+  size_t i = 0;
+  for (i = 0; i < data->size/sizeof(uint32_t); ++i) {
+    ((uint32_t*)data->buffer)[i] = 0;
+  }
+
+  DATA_PTR(self) = data;
+  DATA_TYPE(self) = &mrb_sdl2_misc_buffer_data_type;
+
+  return self;
+
+}
+
+static mrb_value
+mrb_sdl2_misc_bytebuffer_get_at(mrb_state *mrb, mrb_value self)
+{
+  mrb_int index;
+  mrb_get_args(mrb, "i", &index);
+  mrb_sdl2_misc_buffer_data_t *data =
+    (mrb_sdl2_misc_buffer_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_misc_buffer_data_type);
+  if ((index < 0) || (index >= (data->size/sizeof(uint8_t)))) {
+    mrb_raise(mrb, E_INDEX_ERROR, "index out of bounds.");
+  }
+  return mrb_fixnum_value(((uint8_t*)data->buffer)[index]);
+}
+
+static mrb_value
+mrb_sdl2_misc_bytebuffer_set_at(mrb_state *mrb, mrb_value self)
+{
+  mrb_int index;
+  mrb_int value;
+  mrb_get_args(mrb, "ii", &index, &value);
+  mrb_sdl2_misc_buffer_data_t *data =
+    (mrb_sdl2_misc_buffer_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_misc_buffer_data_type);
+  if ((index < 0) || (index >= (data->size/sizeof(uint8_t)))) {
+    mrb_raise(mrb, E_INDEX_ERROR, "index out of bounds.");
+  }
+  ((uint8_t*)data->buffer)[index] = (uint8_t)(value & 0xffu);
+  return self;
+}
+
 void
 mruby_sdl2_misc_init(mrb_state *mrb)
 {
   class_Buffer      = mrb_define_class_under(mrb, mod_SDL2, "Buffer",      mrb->object_class);
   class_FloatBuffer = mrb_define_class_under(mrb, mod_SDL2, "FloatBuffer", class_Buffer);
+  class_ByteBuffer  = mrb_define_class_under(mrb, mod_SDL2, "ByteBuffer",  class_Buffer);
 
   MRB_SET_INSTANCE_TT(class_Buffer,      MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_FloatBuffer, MRB_TT_DATA);
+  MRB_SET_INSTANCE_TT(class_ByteBuffer,  MRB_TT_DATA);
 
   mrb_define_method(mrb, class_Buffer, "initialize", mrb_sdl2_misc_buffer_initialize,  ARGS_REQ(1));
   mrb_define_method(mrb, class_Buffer, "address",    mrb_sdl2_misc_buffer_get_address, ARGS_NONE());
@@ -246,6 +375,10 @@ mruby_sdl2_misc_init(mrb_state *mrb)
   mrb_define_method(mrb, class_FloatBuffer, "size", mrb_sdl2_misc_floatbuffer_get_size, ARGS_NONE());
   mrb_define_method(mrb, class_FloatBuffer, "[]",   mrb_sdl2_misc_floatbuffer_get_at,   ARGS_REQ(1));
   mrb_define_method(mrb, class_FloatBuffer, "[]=",  mrb_sdl2_misc_floatbuffer_set_at,   ARGS_REQ(2));
+
+  mrb_define_method(mrb, class_ByteBuffer, "initialize", mrb_sdl2_misc_bytebuffer_initialize, ARGS_REQ(1));
+  mrb_define_method(mrb, class_ByteBuffer, "[]",         mrb_sdl2_misc_bytebuffer_get_at,     ARGS_REQ(1));
+  mrb_define_method(mrb, class_ByteBuffer, "[]=",        mrb_sdl2_misc_bytebuffer_set_at,     ARGS_REQ(2));
 }
 
 void

@@ -165,8 +165,10 @@ mrb_sdl2_input_mouse_set_cursor(mrb_state *mrb, mrb_value self)
 {
   mrb_value cursor;
   mrb_get_args(mrb, "o", &cursor);
-  SDL_Cursor *c = mrb_sdl2_input_cursor_get_ptr(mrb, cursor);
-  SDL_SetCursor(c);
+  mrb_sdl2_input_mouse_cursor_data_t *data =
+    (mrb_sdl2_input_mouse_cursor_data_t*)mrb_data_get_ptr(mrb, cursor, &mrb_sdl2_input_mouse_cursor_data_type);
+  SDL_SetCursor(data->cursor);
+  data->is_associated = true;
   return self;
 }
 
@@ -274,7 +276,7 @@ mruby_sdl2_mouse_init(mrb_state *mrb)
 
   mod_Mouse = mrb_define_module_under(mrb, mod_Input, "Mouse");
 
-  class_Cursor = mrb_define_class_under(mrb, mod_Input, "Cursor", mrb->object_class);
+  class_Cursor = mrb_define_class_under(mrb, mod_Mouse, "Cursor", mrb->object_class);
 
   MRB_SET_INSTANCE_TT(class_Cursor, MRB_TT_DATA);
 
