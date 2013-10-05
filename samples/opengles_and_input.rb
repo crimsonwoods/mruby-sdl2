@@ -104,6 +104,9 @@ begin
       if ev.type == SDL2::Input::SDL_QUIT then
         break
       end
+      if ev.type == SDL2::Input::SDL_FINGERMOTION then
+        next
+      end
       r = Math::PI - r
       GL2::glClear(GL2::GL_COLOR_BUFFER_BIT | GL2::GL_DEPTH_BUFFER_BIT)
       GL2::glUniform1f(u_Rotation, r)
