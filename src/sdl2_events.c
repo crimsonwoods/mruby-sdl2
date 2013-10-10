@@ -3,6 +3,7 @@
 #include "mruby/value.h"
 #include "mruby/data.h"
 #include "mruby/class.h"
+#include "mruby/string.h"
 #include <SDL2/SDL_keyboard.h>
 
 static struct RClass *mod_Input = NULL;
@@ -234,6 +235,28 @@ static mrb_value
 mrb_sdl2_input_is_quit_requested(mrb_state *mrb, mrb_value self)
 {
   return (SDL_FALSE == SDL_QuitRequested()) ? mrb_false_value() : mrb_true_value();
+}
+
+static mrb_value
+mrb_sdl2_input_register(mrb_state *mrb, mrb_value self)
+{
+  mrb_int num;
+  mrb_get_args(mrb, "i", &num);
+  return mrb_fixnum_value(SDL_RegisterEvents(num));
+}
+
+static mrb_value
+mrb_sdl2_input_push(mrb_state *mrb, mrb_value self)
+{
+  mrb_value event;
+  mrb_get_args(mrb, "o", &event);
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, event, &mrb_sdl2_input_event_data_type);
+  int const ret = SDL_PushEvent(&data->event);
+  if (0 > ret) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return mrb_fixnum_value(ret);
 }
 
 /***************************************************************************
@@ -478,6 +501,233 @@ mrb_sdl2_input_quitevent_timestamp(mrb_state *mrb, mrb_value self)
 
 /***************************************************************************
 *
+* class SDL2::Input::QuitEvent
+*
+***************************************************************************/
+
+typedef struct mrb_sdl2_input_user_data_t {
+  enum mrb_vtype type;
+  union udata_t {
+    mrb_int   fixnum_value;
+    mrb_float float_value;
+    void *    cptr_value;
+    char *    string_value;
+  } data;
+} mrb_sdl2_input_user_data_t;
+
+static void *
+mrb_sdl2_input_to_voidp(mrb_state *mrb, mrb_value data)
+{
+  mrb_sdl2_input_user_data_t *udata = 
+    (mrb_sdl2_input_user_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_input_user_data_t));
+  if (NULL == udata) {
+    mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+  }
+  switch (mrb_type(data)) {
+  case MRB_TT_FIXNUM:
+    udata->data.fixnum_value = mrb_fixnum(data);
+    break;
+  case MRB_TT_FLOAT:
+    udata->data.float_value = mrb_float(data);
+    break;
+  case MRB_TT_STRING: {
+    size_t const len = RSTRING_LEN(data);
+    char *str = (char*)mrb_malloc(mrb, sizeof(char) * (len + 1));
+    if (NULL == str) {
+      mrb_free(mrb, udata);
+      mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+    }
+    str[len] = '\0';
+    udata->data.string_value = str;
+    break;
+  }
+  case MRB_TT_CPTR:
+    udata->data.cptr_value = mrb_cptr(data);
+    break;
+  default:
+    mrb_free(mrb, udata);
+    mrb_raise(mrb, E_TYPE_ERROR, "expected Fixnum/Float/String/Cptr");
+    break;
+  }
+  udata->type = mrb_type(data);
+  return (void*)udata;
+}
+
+static mrb_value
+mrb_sdl2_input_to_value(mrb_state *mrb, void *data)
+{
+  mrb_sdl2_input_user_data_t *udata =
+    (mrb_sdl2_input_user_data_t*)data;
+  if (NULL == udata) {
+    return mrb_nil_value();
+  }
+  mrb_value value;
+  switch (udata->type) {
+  case MRB_TT_FIXNUM:
+    value = mrb_fixnum_value(udata->data.fixnum_value);
+    break;
+  case MRB_TT_FLOAT:
+    value = mrb_float_value(mrb, udata->data.float_value);
+    break;
+  case MRB_TT_STRING:
+    value = mrb_str_new_cstr(mrb, udata->data.string_value);
+    mrb_free(mrb, udata->data.string_value);
+    break;
+  case MRB_TT_CPTR:
+    value = mrb_cptr_value(mrb, udata->data.cptr_value);
+    break;
+  default:
+    value = mrb_nil_value();
+    break;
+  }
+  mrb_free(mrb, data);
+  return value;
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_initialize(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)DATA_PTR(self);
+
+  if (NULL == data) {
+    data = (mrb_sdl2_input_event_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_input_event_data_t));
+    if (NULL == data) {
+      mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+    }
+    data->event = (SDL_Event){ 0 };
+  }
+
+  mrb_int type, code;
+  mrb_value data1, data2;
+  int const argc = mrb_get_args(mrb, "ii|oo", &type, &code, &data1, &data2);
+
+  switch (argc) {
+  case 4:
+    data->event.user.data2 = mrb_sdl2_input_to_voidp(mrb, data2);
+  case 3:
+    data->event.user.data1 = mrb_sdl2_input_to_voidp(mrb, data1);
+  case 2:
+    data->event.user.type = type;
+    data->event.user.code = code;
+    break;
+  }
+
+  DATA_PTR(self) = data;
+  DATA_TYPE(self) = &mrb_sdl2_input_event_data_type;
+
+  return self;
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_set_type(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  mrb_int type;
+  mrb_get_args(mrb, "i", &type);
+  data->event.user.type = type;
+  return self;
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_get_timestamp(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  return mrb_fixnum_value(data->event.user.timestamp);
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_set_timestamp(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  mrb_int timestamp;
+  mrb_get_args(mrb, "i", &timestamp);
+  data->event.user.timestamp = timestamp;
+  return self;
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_get_window_id(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  return mrb_fixnum_value(data->event.user.windowID);
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_set_window_id(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  mrb_int windowID;
+  mrb_get_args(mrb, "i", &windowID);
+  data->event.user.windowID = windowID;
+  return self;
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_get_code(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  return mrb_fixnum_value(data->event.user.code);
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_set_code(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  mrb_int code;
+  mrb_get_args(mrb, "i", &code);
+  data->event.user.code = code;
+  return self;
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_get_data1(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  return mrb_sdl2_input_to_value(mrb, data->event.user.data1);
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_set_data1(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  mrb_value data1;
+  mrb_get_args(mrb, "o", &data1);
+  data->event.user.data1 = mrb_sdl2_input_to_voidp(mrb, data1);
+  return self;
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_get_data2(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  return mrb_sdl2_input_to_value(mrb, data->event.user.data2);
+}
+
+static mrb_value
+mrb_sdl2_input_userevent_set_data2(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_input_event_data_t *data =
+    (mrb_sdl2_input_event_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_input_event_data_type);
+  mrb_value data2;
+  mrb_get_args(mrb, "o", &data2);
+  data->event.user.data2 = mrb_sdl2_input_to_voidp(mrb, data2);
+  return self;
+}
+
+
+/***************************************************************************
+*
 * class SDL2::Input::WindowEvent
 *
 ***************************************************************************/
@@ -586,6 +836,8 @@ mruby_sdl2_events_init(mrb_state *mrb)
   mrb_define_module_function(mrb, mod_Input, "flush",           mrb_sdl2_input_flush_event,       ARGS_REQ(1) | ARGS_OPT(1));
   mrb_define_module_function(mrb, mod_Input, "has_events?",     mrb_sdl2_input_has_events,        ARGS_REQ(1) | ARGS_OPT(1));
   mrb_define_module_function(mrb, mod_Input, "quit_requested?", mrb_sdl2_input_is_quit_requested, ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Input, "register",        mrb_sdl2_input_register,          ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Input, "push",            mrb_sdl2_input_push,              ARGS_REQ(1));
 
   mrb_define_method(mrb, class_Event, "type", mrb_sdl2_input_event_get_type, ARGS_NONE());
 
@@ -619,6 +871,19 @@ mruby_sdl2_events_init(mrb_state *mrb)
   mrb_define_method(mrb, class_MouseWheelEvent, "y",         mrb_sdl2_input_mousewheelevent_get_y,         ARGS_NONE());
 
   mrb_define_method(mrb, class_QuitEvent, "timestamp", mrb_sdl2_input_quitevent_timestamp, ARGS_NONE());
+
+  mrb_define_method(mrb, class_UserEvent, "initialize",  mrb_sdl2_input_userevent_initialize,    ARGS_REQ(2) | ARGS_OPT(2));
+  mrb_define_method(mrb, class_UserEvent, "type=",       mrb_sdl2_input_userevent_set_type,      ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "timestamp",   mrb_sdl2_input_userevent_get_timestamp, ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "timestamp=",  mrb_sdl2_input_userevent_set_timestamp, ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "window_id",   mrb_sdl2_input_userevent_get_window_id, ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "window_id=",  mrb_sdl2_input_userevent_set_window_id, ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "code",        mrb_sdl2_input_userevent_get_code,      ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "code=",       mrb_sdl2_input_userevent_set_code,      ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "data1",       mrb_sdl2_input_userevent_get_data1,     ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "data1=",      mrb_sdl2_input_userevent_set_data1,     ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "data2",       mrb_sdl2_input_userevent_get_data2,     ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "data2=",      mrb_sdl2_input_userevent_set_data2,     ARGS_REQ(1));
 
   mrb_define_method(mrb, class_WindowEvent, "timestamp", mrb_sdl2_input_windowevent_get_timestamp, ARGS_NONE());
   mrb_define_method(mrb, class_WindowEvent, "window_id", mrb_sdl2_input_windowevent_get_window_id, ARGS_NONE());
