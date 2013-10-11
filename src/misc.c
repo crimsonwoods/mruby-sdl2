@@ -194,6 +194,103 @@ mrb_sdl2_misc_buffer_get_cptr(mrb_state *mrb, mrb_value self)
   return mrb_cptr_value(mrb, data->buffer);
 }
 
+
+static mrb_value
+mrb_sdl2_misc_floatbuffer_initialize(mrb_state *mrb, mrb_value self)
+{
+  mrb_value arg;
+  mrb_get_args(mrb, "o", &arg);
+
+  mrb_sdl2_misc_buffer_data_t *data =
+    (mrb_sdl2_misc_buffer_data_t*)DATA_PTR(self);
+
+  if (NULL == data) {
+    data = (mrb_sdl2_misc_buffer_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_misc_buffer_data_t));
+    if (NULL == data) {
+      mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+    }
+    data->buffer = NULL;
+    data->size   = 0;
+  }
+
+  enum mrb_vtype const arg_type = mrb_type(arg);
+  switch (arg_type) {
+  case MRB_TT_FIXNUM:
+    data->size = sizeof(float) * (size_t)mrb_fixnum(arg);
+    break;
+  case MRB_TT_FLOAT:
+    data->size = sizeof(float) * (size_t)mrb_float(arg);
+    break;
+  case MRB_TT_STRING:
+    data->size = sizeof(float) * (size_t)mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
+    break;
+  case MRB_TT_ARRAY:
+    {
+      mrb_int const n = mrb_ary_len(mrb, arg);
+      if (0 == n) {
+        mrb_raise(mrb, E_ARGUMENT_ERROR, "cannot accept empty array.");
+      }
+      data->size = sizeof(float) * n;
+    }
+    break;
+  default:
+    if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_f", 4))) {
+      data->size = sizeof(float) * (size_t)mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
+    } else if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_i", 4))) {
+      data->size = sizeof(float) * (size_t)mrb_fixnum(mrb_funcall(mrb, arg, "to_i", 0));
+    } else {
+      mrb_raise(mrb, E_TYPE_ERROR, "expected Fixnum/Float/String/Array or comvertible type");
+    }
+    break;
+  }
+
+  data->buffer = mrb_malloc(mrb, data->size);
+  if (NULL == data->buffer) {
+    mrb_free(mrb, data);
+    mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
+  }
+
+  size_t i = 0;
+  for (i = 0; i < data->size/sizeof(float); ++i) {
+    ((float*)data->buffer)[i] = 0;
+  }
+
+  if (arg_type == MRB_TT_ARRAY) {
+    mrb_int const n = mrb_ary_len(mrb, arg);
+    mrb_int i;
+    for (i = 0; i < n; ++i) {
+      mrb_value const item = mrb_ary_ref(mrb, arg, i);
+      switch (mrb_type(item)) {
+      case MRB_TT_FIXNUM:
+        ((float*)data->buffer)[i] = (float)mrb_fixnum(item);
+        break;
+      case MRB_TT_FLOAT:
+        ((float*)data->buffer)[i] = (float)mrb_float(item);
+        break;
+      case MRB_TT_STRING:
+        ((float*)data->buffer)[i] = (float)mrb_float(mrb_funcall(mrb, item, "to_f", 0));
+        break;
+      default:
+        if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_f", 4))) {
+          ((float*)data->buffer)[i] = (float)mrb_float(mrb_funcall(mrb, item, "to_f", 0));
+        } else if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_i", 4))) {
+          ((float*)data->buffer)[i] = (float)mrb_fixnum(mrb_funcall(mrb, item, "to_i", 0));
+        } else {
+          mrb_free(mrb, data->buffer);
+          mrb_free(mrb, data);
+          mrb_raise(mrb, E_TYPE_ERROR, "expected Fixnum/Float/String or convertible type");
+        }
+        break;
+      }
+    }
+  }
+
+  DATA_PTR(self) = data;
+  DATA_TYPE(self) = &mrb_sdl2_misc_buffer_data_type;
+
+  return self;
+}
+
 static mrb_value
 mrb_sdl2_misc_floatbuffer_get_size(mrb_state *mrb, mrb_value self)
 {
@@ -286,6 +383,11 @@ mrb_sdl2_misc_bytebuffer_initialize(mrb_state *mrb, mrb_value self)
     mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
   }
 
+  size_t i = 0;
+  for (i = 0; i < data->size/sizeof(uint8_t); ++i) {
+    ((uint8_t*)data->buffer)[i] = 0;
+  }
+
   if (arg_type == MRB_TT_ARRAY) {
     mrb_int const n = mrb_ary_len(mrb, arg);
     mrb_int i;
@@ -316,16 +418,10 @@ mrb_sdl2_misc_bytebuffer_initialize(mrb_state *mrb, mrb_value self)
     }
   }
 
-  size_t i = 0;
-  for (i = 0; i < data->size/sizeof(uint32_t); ++i) {
-    ((uint32_t*)data->buffer)[i] = 0;
-  }
-
   DATA_PTR(self) = data;
   DATA_TYPE(self) = &mrb_sdl2_misc_buffer_data_type;
 
   return self;
-
 }
 
 static mrb_value
@@ -372,9 +468,10 @@ mruby_sdl2_misc_init(mrb_state *mrb)
   mrb_define_method(mrb, class_Buffer, "size",       mrb_sdl2_misc_buffer_get_size,    ARGS_NONE());
   mrb_define_method(mrb, class_Buffer, "cptr",       mrb_sdl2_misc_buffer_get_cptr,    ARGS_NONE());
 
-  mrb_define_method(mrb, class_FloatBuffer, "size", mrb_sdl2_misc_floatbuffer_get_size, ARGS_NONE());
-  mrb_define_method(mrb, class_FloatBuffer, "[]",   mrb_sdl2_misc_floatbuffer_get_at,   ARGS_REQ(1));
-  mrb_define_method(mrb, class_FloatBuffer, "[]=",  mrb_sdl2_misc_floatbuffer_set_at,   ARGS_REQ(2));
+  mrb_define_method(mrb, class_FloatBuffer, "initialize", mrb_sdl2_misc_floatbuffer_initialize, ARGS_REQ(1));
+  mrb_define_method(mrb, class_FloatBuffer, "size",       mrb_sdl2_misc_floatbuffer_get_size,   ARGS_NONE());
+  mrb_define_method(mrb, class_FloatBuffer, "[]",         mrb_sdl2_misc_floatbuffer_get_at,     ARGS_REQ(1));
+  mrb_define_method(mrb, class_FloatBuffer, "[]=",        mrb_sdl2_misc_floatbuffer_set_at,     ARGS_REQ(2));
 
   mrb_define_method(mrb, class_ByteBuffer, "initialize", mrb_sdl2_misc_bytebuffer_initialize, ARGS_REQ(1));
   mrb_define_method(mrb, class_ByteBuffer, "[]",         mrb_sdl2_misc_bytebuffer_get_at,     ARGS_REQ(1));
