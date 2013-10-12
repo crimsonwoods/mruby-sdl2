@@ -6,6 +6,7 @@
 #include "sdl2_events.h"
 #include "sdl2_keyboard.h"
 #include "sdl2_mouse.h"
+#include "sdl2_thread.h"
 #include "misc.h"
 #include "mruby/string.h"
 #include <SDL2/SDL.h>
@@ -167,6 +168,10 @@ mrb_mruby_sdl2_gem_init(mrb_state *mrb)
   mrb_gc_arena_restore(mrb, arena_size);
 
   arena_size = mrb_gc_arena_save(mrb);
+  mruby_sdl2_thread_init(mrb);
+  mrb_gc_arena_restore(mrb, arena_size);
+
+  arena_size = mrb_gc_arena_save(mrb);
   mruby_sdl2_misc_init(mrb);
   mrb_gc_arena_restore(mrb, arena_size);
 }
@@ -175,6 +180,7 @@ void
 mrb_mruby_sdl2_gem_final(mrb_state *mrb)
 {
   mruby_sdl2_misc_final(mrb);
+  mruby_sdl2_thread_final(mrb);
   mruby_sdl2_mouse_final(mrb);
   mruby_sdl2_keyboard_final(mrb);
   mruby_sdl2_events_final(mrb);
