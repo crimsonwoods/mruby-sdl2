@@ -153,6 +153,29 @@ mrb_sdl2_thread_wait(mrb_state *mrb, mrb_value self)
   return mrb_fixnum_value(status);
 }
 
+static mrb_value
+mrb_sdl2_thread_get_id(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_thread_data_t *data =
+    (mrb_sdl2_thread_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_thread_data_type);
+  if (NULL == data->thread) {
+    return mrb_nil_value();
+  }
+  return mrb_fixnum_value(SDL_GetThreadID(data->thread));
+}
+
+static mrb_value
+mrb_sdl2_thread_set_priority(mrb_state *mrb, mrb_value cls)
+{
+  mrb_int priority;
+  mrb_get_args(mrb, "i", &priority);
+  if (0 > SDL_SetThreadPriority(priority)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return cls;
+}
+
+
 void
 mruby_sdl2_thread_init(mrb_state *mrb)
 {
@@ -160,9 +183,19 @@ mruby_sdl2_thread_init(mrb_state *mrb)
 
   MRB_SET_INSTANCE_TT(class_Thread, MRB_TT_DATA);
 
-  mrb_define_method(mrb, class_Thread, "initialize", mrb_sdl2_thread_initialize, ARGS_BLOCK());
-  mrb_define_method(mrb, class_Thread, "wait",       mrb_sdl2_thread_wait,       ARGS_NONE());
-  mrb_define_method(mrb, class_Thread, "join",       mrb_sdl2_thread_wait,       ARGS_NONE());
+  mrb_define_method(mrb, class_Thread, "initialize", mrb_sdl2_thread_initialize,   ARGS_BLOCK());
+  mrb_define_method(mrb, class_Thread, "wait",       mrb_sdl2_thread_wait,         ARGS_NONE());
+  mrb_define_method(mrb, class_Thread, "join",       mrb_sdl2_thread_wait,         ARGS_NONE());
+  mrb_define_method(mrb, class_Thread, "id",         mrb_sdl2_thread_get_id,       ARGS_NONE());
+
+  mrb_define_class_method(mrb, class_Thread, "priority=",  mrb_sdl2_thread_set_priority, ARGS_REQ(1));
+
+  /* SDL_ThreadPriority */
+  int arena_size = mrb_gc_arena_save(mrb);
+  mrb_define_const(mrb, class_Thread, "SDL_THREAD_PRIORITY_LOW",    mrb_fixnum_value(SDL_THREAD_PRIORITY_LOW));
+  mrb_define_const(mrb, class_Thread, "SDL_THREAD_PRIORITY_NORMAL", mrb_fixnum_value(SDL_THREAD_PRIORITY_NORMAL));
+  mrb_define_const(mrb, class_Thread, "SDL_THREAD_PRIORITY_HIGH",   mrb_fixnum_value(SDL_THREAD_PRIORITY_HIGH));
+  mrb_gc_arena_restore(mrb, arena_size);
 }
 
 void
