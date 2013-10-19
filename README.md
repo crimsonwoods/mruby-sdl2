@@ -58,7 +58,7 @@ Sample code is contained into 'samples' directory.
 |          summary          |    header   |       status      |
 |:--------------------------|:------------|:-----------------:|
 |Initialization and Shutdown|SDL.h        |     supported     |
-|Configuration Variables    |SDL_hints.h  |   not supported   |
+|Configuration Variables    |SDL_hints.h  |     supported     |
 |Error Handling             |SDL_error.h  |supported partially|
 |Log Handling               |SDL_log.h    |   not supported   |
 |Assertions                 |SDL_assert.h |   not supported   |
