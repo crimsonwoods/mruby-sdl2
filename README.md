@@ -62,7 +62,7 @@ Sample code is contained into 'samples' directory.
 |Error Handling             |SDL_error.h  |supported partially|
 |Log Handling               |SDL_log.h    |   not supported   |
 |Assertions                 |SDL_assert.h |   not supported   |
-|Querying SDL Version       |SDL_version.h|   not supported   |
+|Querying SDL Version       |SDL_version.h|     supported     |
 
 ## Video
 
