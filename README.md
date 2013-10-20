@@ -110,7 +110,7 @@ Sample code is contained into 'samples' directory.
 
 |   summary   |   header   |   status    |
 |:------------|:-----------|:-----------:|
-|Timer Support|SDL_timer.h |not supported|
+|Timer Support|SDL_timer.h |  supported  |
 
 ## File I/O Abstraction
 
