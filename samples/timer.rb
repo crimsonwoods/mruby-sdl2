@@ -1,11 +1,12 @@
 SDL2::init
 
 begin
-  timer = SDL2::Timer.add(3000) do |interval|
-    puts "Timer - interval = #{interval}"
-    0
+  n = 2000
+  timer = SDL2::Timer.add(n) do |interval|
+    puts "Timer - interval = #{interval}/#{n}"
+    n = n - 500
   end
-  SDL2::Timer::delay 5000
+  SDL2::Timer::delay 6000
 ensure
   SDL2::quit
 end

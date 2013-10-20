@@ -3,6 +3,7 @@
 #include "mruby/value.h"
 #include "mruby/class.h"
 #include "mruby/proc.h"
+#include "threading.h"
 
 static struct RClass *mod_Timer = NULL;
 
@@ -62,43 +63,30 @@ static Uint32 mrb_sdl2_timer_callback(Uint32 interval, void *param)
   mrb_state *mrb = p->mrb;
   mrb_value  callback = p->callback;
 
-  mrb_state *new_mrb = mrb_open_allocf(mrb->allocf, mrb->ud);
+  mrb_state *new_mrb = mrb_open_for_thread(mrb);
   if (NULL == new_mrb) {
     return 0;
   }
 
-  /* back up each field to bring back after. */
-  mrb_irep **irep         = new_mrb->irep;
-  size_t irep_len         = new_mrb->irep_len;
-  size_t irep_capa        = new_mrb->irep_capa;
-  struct kh_n2s *name2sym = new_mrb->name2sym;
-
-  /* set shared fields. */
-  new_mrb->irep      = mrb->irep;
-  new_mrb->irep_len  = mrb->irep_len;
-  new_mrb->irep_capa = mrb->irep_capa;
-  new_mrb->name2sym  = mrb->name2sym;
-
+  mrb_value arg;
   mrb_value ret;
   if (interval > MRB_INT_MAX) {
-    ret = mrb_yield(new_mrb, callback, mrb_float_value(new_mrb, interval));
+    arg = mrb_float_value(new_mrb, interval);
   } else {
-    ret = mrb_yield(new_mrb, callback, mrb_fixnum_value(interval));
+    arg = mrb_fixnum_value(interval);
   }
+  ret = mrb_yield(new_mrb, callback, arg);
 
-  new_mrb->irep      = irep;
-  new_mrb->irep_len  = irep_len;
-  new_mrb->irep_capa = irep_capa;
-  new_mrb->name2sym  = name2sym;
-
-  mrb_close(new_mrb);
+  mrb_close_for_thread(new_mrb);
 
   Uint32 next_interval;
   switch (mrb_type(ret)) {
   case MRB_TT_FIXNUM:
     next_interval = (Uint32)mrb_fixnum(ret);
+    break;
   case MRB_TT_FLOAT:
     next_interval = (Uint32)mrb_float(ret);
+    break;
   default:
     next_interval = 0; /* cancel next timer */
     break;
@@ -114,6 +102,9 @@ mrb_sdl2_timer_add(mrb_state *mrb, mrb_value mod)
 {
   mrb_value interval, callback;
   mrb_get_args(mrb, "o&", &interval, &callback);
+  if (mrb_nil_p(callback)) {
+    mrb_raise(mrb, E_TYPE_ERROR, "non block argument is given.");
+  }
   mrb_sdl2_timer_param_t *param = (mrb_sdl2_timer_param_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_timer_param_t));
   if (NULL == param) {
     mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
