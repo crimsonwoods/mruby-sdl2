@@ -58,6 +58,7 @@ mrb_open_for_thread(mrb_state *vm)
   if (mrb == NULL) return NULL;
 
   *mrb = *vm;
+  mrb->jmp = NULL;
   mrb->c = (struct mrb_context*)mrb_malloc(mrb, sizeof(struct mrb_context));
   *mrb->c = mrb_context_zero;
   mrb->root_c = mrb->c;
