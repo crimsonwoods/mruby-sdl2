@@ -111,7 +111,7 @@ begin
       GL2::glClear(GL2::GL_COLOR_BUFFER_BIT | GL2::GL_DEPTH_BUFFER_BIT)
       GL2::glUniform1f(u_Rotation, r)
       GL2::glEnableVertexAttribArray(a_Position)
-      GL2::glVertexAttribPointer(a_Position, 3, GL2::GL_FLOAT, 0, false, vertex.cptr)
+      GL2::glVertexAttribPointer(a_Position, 3, GL2::GL_FLOAT, 0, 0, vertex.cptr)
       GL2::glDrawArrays(GL2::GL_TRIANGLES, 0, 3)
       GL2::glDisableVertexAttribArray(a_Position)
       w.swap
