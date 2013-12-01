@@ -32,7 +32,7 @@ mrb_sdl2_hints_set(mrb_state *mrb, mrb_value mod)
     return mrb_false_value();
   }
   if (mrb_type(value) != MRB_TT_STRING) {
-    if (mrb_respond_to(mrb, value, mrb_intern2(mrb, "to_s", 4))) {
+    if (mrb_respond_to(mrb, value, mrb_intern(mrb, "to_s", 4))) {
       value = mrb_funcall(mrb, value, "to_s", 0);
       if (mrb_nil_p(value)) {
         return mrb_false_value();
@@ -55,7 +55,7 @@ mrb_sdl2_hints_set_with_priority(mrb_state *mrb, mrb_value mod)
     return mrb_false_value();
   }
   if (mrb_type(value) != MRB_TT_STRING) {
-    if (mrb_respond_to(mrb, value, mrb_intern2(mrb, "to_s", 4))) {
+    if (mrb_respond_to(mrb, value, mrb_intern(mrb, "to_s", 4))) {
       value = mrb_funcall(mrb, value, "to_s", 0);
       if (mrb_nil_p(value)) {
         return mrb_false_value();

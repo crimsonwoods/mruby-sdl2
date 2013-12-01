@@ -287,7 +287,7 @@ mrb_sdl2_video_renderer_set_draw_color(mrb_state *mrb, mrb_value self)
   r = mrb_fixnum(mrb_funcall(mrb, rgba, "r", 0));
   g = mrb_fixnum(mrb_funcall(mrb, rgba, "g", 0));
   b = mrb_fixnum(mrb_funcall(mrb, rgba, "b", 0));
-  if (mrb_respond_to(mrb, rgba, mrb_intern2(mrb, "a", 1))) {
+  if (mrb_respond_to(mrb, rgba, mrb_intern(mrb, "a", 1))) {
     a = mrb_fixnum(mrb_funcall(mrb, rgba, "a", 0));
   } else {
     a = SDL_ALPHA_OPAQUE;

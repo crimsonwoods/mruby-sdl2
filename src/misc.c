@@ -76,9 +76,9 @@ mrb_sdl2_misc_buffer_initialize(mrb_state *mrb, mrb_value self)
         data->size = n * sizeof(float);
         break;
       default:
-        if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_f", 4))) {
+        if (mrb_respond_to(mrb, item, mrb_intern(mrb, "to_f", 4))) {
           data->size = n * sizeof(float);
-        } else if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_i", 4))) {
+        } else if (mrb_respond_to(mrb, item, mrb_intern(mrb, "to_i", 4))) {
           data->size = n * sizeof(int32_t);
         } else {
           mrb_raise(mrb, E_TYPE_ERROR, "expected Fixnum/Float/String or convertible type");
@@ -88,9 +88,9 @@ mrb_sdl2_misc_buffer_initialize(mrb_state *mrb, mrb_value self)
     }
     break;
   default:
-    if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_f", 4))) {
+    if (mrb_respond_to(mrb, arg, mrb_intern(mrb, "to_f", 4))) {
       data->size = (size_t)mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
-    } else if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_i", 4))) {
+    } else if (mrb_respond_to(mrb, arg, mrb_intern(mrb, "to_i", 4))) {
       data->size = (size_t)mrb_fixnum(mrb_funcall(mrb, arg, "to_i", 0));
     } else {
       mrb_raise(mrb, E_TYPE_ERROR, "expected Fixnum/Float/String/Array or comvertible type");
@@ -147,10 +147,10 @@ mrb_sdl2_misc_buffer_initialize(mrb_state *mrb, mrb_value self)
         } else if (item_type == MRB_TT_FLOAT) {
           ((int32_t*)data->buffer)[i] = mrb_fixnum(mrb_funcall(mrb, item, "to_i", 0));
         } else {
-          if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_f", 4))) {
+          if (mrb_respond_to(mrb, item, mrb_intern(mrb, "to_f", 4))) {
             ((float*)data->buffer)[i] = mrb_float(mrb_funcall(mrb, item, "to_f", 0));
             item_type = MRB_TT_FLOAT;
-          } else if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_i", 4))) {
+          } else if (mrb_respond_to(mrb, item, mrb_intern(mrb, "to_i", 4))) {
             ((int32_t*)data->buffer)[i] = mrb_fixnum(mrb_funcall(mrb, item, "to_i", 0));
             item_type = MRB_TT_FIXNUM;
           } else {
@@ -234,9 +234,9 @@ mrb_sdl2_misc_floatbuffer_initialize(mrb_state *mrb, mrb_value self)
     }
     break;
   default:
-    if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_f", 4))) {
+    if (mrb_respond_to(mrb, arg, mrb_intern(mrb, "to_f", 4))) {
       data->size = sizeof(float) * (size_t)mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
-    } else if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_i", 4))) {
+    } else if (mrb_respond_to(mrb, arg, mrb_intern(mrb, "to_i", 4))) {
       data->size = sizeof(float) * (size_t)mrb_fixnum(mrb_funcall(mrb, arg, "to_i", 0));
     } else {
       mrb_raise(mrb, E_TYPE_ERROR, "expected Fixnum/Float/String/Array or comvertible type");
@@ -271,9 +271,9 @@ mrb_sdl2_misc_floatbuffer_initialize(mrb_state *mrb, mrb_value self)
         ((float*)data->buffer)[i] = (float)mrb_float(mrb_funcall(mrb, item, "to_f", 0));
         break;
       default:
-        if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_f", 4))) {
+        if (mrb_respond_to(mrb, item, mrb_intern(mrb, "to_f", 4))) {
           ((float*)data->buffer)[i] = (float)mrb_float(mrb_funcall(mrb, item, "to_f", 0));
-        } else if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_i", 4))) {
+        } else if (mrb_respond_to(mrb, item, mrb_intern(mrb, "to_i", 4))) {
           ((float*)data->buffer)[i] = (float)mrb_fixnum(mrb_funcall(mrb, item, "to_i", 0));
         } else {
           mrb_free(mrb, data->buffer);
@@ -367,9 +367,9 @@ mrb_sdl2_misc_bytebuffer_initialize(mrb_state *mrb, mrb_value self)
     }
     break;
   default:
-    if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_f", 4))) {
+    if (mrb_respond_to(mrb, arg, mrb_intern(mrb, "to_f", 4))) {
       data->size = (size_t)mrb_float(mrb_funcall(mrb, arg, "to_f", 0));
-    } else if (mrb_respond_to(mrb, arg, mrb_intern2(mrb, "to_i", 4))) {
+    } else if (mrb_respond_to(mrb, arg, mrb_intern(mrb, "to_i", 4))) {
       data->size = (size_t)mrb_fixnum(mrb_funcall(mrb, arg, "to_i", 0));
     } else {
       mrb_raise(mrb, E_TYPE_ERROR, "expected Fixnum/Float/String/Array or comvertible type");
@@ -404,9 +404,9 @@ mrb_sdl2_misc_bytebuffer_initialize(mrb_state *mrb, mrb_value self)
         ((uint8_t*)data->buffer)[i] = (uint8_t)((uint32_t)mrb_float(mrb_funcall(mrb, item, "to_f", 0)) & 0xffu);
         break;
       default:
-        if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_f", 4))) {
+        if (mrb_respond_to(mrb, item, mrb_intern(mrb, "to_f", 4))) {
           ((uint8_t*)data->buffer)[i] = (uint8_t)((uint32_t)mrb_float(mrb_funcall(mrb, item, "to_f", 0)) & 0xffu);
-        } else if (mrb_respond_to(mrb, item, mrb_intern2(mrb, "to_i", 4))) {
+        } else if (mrb_respond_to(mrb, item, mrb_intern(mrb, "to_i", 4))) {
           ((uint8_t*)data->buffer)[i] = (uint8_t)(mrb_fixnum(mrb_funcall(mrb, item, "to_i", 0)) & 0xffu);
         } else {
           mrb_free(mrb, data->buffer);

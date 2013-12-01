@@ -133,7 +133,7 @@ mrb_sdl2_video_init(mrb_state *mrb, mrb_value self)
     ret = SDL_VideoInit(NULL);
   } else if (mrb_string_p(name)) {
     ret = SDL_VideoInit(RSTRING_PTR(name));
-  } else if (mrb_respond_to(mrb, name, mrb_intern2(mrb, "to_s", 4))) {
+  } else if (mrb_respond_to(mrb, name, mrb_intern(mrb, "to_s", 4))) {
     name = mrb_funcall(mrb, name, "to_s", 0);
     ret = SDL_VideoInit(RSTRING_PTR(name));
   } else {

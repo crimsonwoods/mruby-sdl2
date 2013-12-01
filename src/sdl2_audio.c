@@ -410,8 +410,8 @@ mrb_sdl2_audio_audiospec_callback(void *userdata, Uint8 *stream, int len)
   mrb_value obj = data->obj;
 
   SDL_AudioSpec const * const spec = mrb_sdl2_audiospec_get_ptr(mrb, obj);
-  mrb_value udata = mrb_iv_get(mrb, obj, mrb_intern2(mrb, "userdata", 8));
-  mrb_value block = mrb_iv_get(mrb, obj, mrb_intern2(mrb, "callback", 8));
+  mrb_value udata = mrb_iv_get(mrb, obj, mrb_intern(mrb, "userdata", 8));
+  mrb_value block = mrb_iv_get(mrb, obj, mrb_intern(mrb, "callback", 8));
 
   SDL_memset(stream, spec->silence, len);
 
@@ -551,7 +551,7 @@ mrb_sdl2_audio_audiospec_get_size(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_sdl2_audio_audiospec_get_callback(mrb_state *mrb, mrb_value self)
 {
-  return mrb_iv_get(mrb, self, mrb_intern2(mrb, "callback", 8));
+  return mrb_iv_get(mrb, self, mrb_intern(mrb, "callback", 8));
 }
 
 static mrb_value
@@ -562,14 +562,14 @@ mrb_sdl2_audio_audiospec_set_callback(mrb_state *mrb, mrb_value self)
   if (mrb_type(proc) != MRB_TT_PROC) {
     mrb_raise(mrb, E_TYPE_ERROR, "given value is not proc object.");
   }
-  mrb_iv_set(mrb, self, mrb_intern2(mrb, "callback", 8), proc);
+  mrb_iv_set(mrb, self, mrb_intern(mrb, "callback", 8), proc);
   return self;
 }
 
 static mrb_value
 mrb_sdl2_audio_audiospec_get_userdata(mrb_state *mrb, mrb_value self)
 {
-  return mrb_iv_get(mrb, self, mrb_intern2(mrb, "userdata", 8));
+  return mrb_iv_get(mrb, self, mrb_intern(mrb, "userdata", 8));
 }
 
 static mrb_value
@@ -577,7 +577,7 @@ mrb_sdl2_audio_audiospec_set_userdata(mrb_state *mrb, mrb_value self)
 {
   mrb_value obj;
   mrb_get_args(mrb, "o", &obj);
-  mrb_iv_set(mrb, self, mrb_intern2(mrb, "userdata", 8), obj);
+  mrb_iv_set(mrb, self, mrb_intern(mrb, "userdata", 8), obj);
   return self;
 }
 
@@ -811,7 +811,7 @@ mrb_sdl2_audio_audiodata_initialize(mrb_state *mrb, mrb_value self)
   spec->udata.mrb = mrb;
   spec->udata.obj = s;
 
-  mrb_iv_set(mrb, self, mrb_intern2(mrb, "spec", 4), s);
+  mrb_iv_set(mrb, self, mrb_intern(mrb, "spec", 4), s);
 
   DATA_PTR(self) = data;
   DATA_TYPE(self) = &mrb_sdl2_audio_audiodata_data_type;
@@ -835,7 +835,7 @@ mrb_sdl2_audio_audiodata_destroy(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_sdl2_audio_audiodata_get_spec(mrb_state *mrb, mrb_value self)
 {
-  return mrb_iv_get(mrb, self, mrb_intern2(mrb, "spec", 4));
+  return mrb_iv_get(mrb, self, mrb_intern(mrb, "spec", 4));
 }
 
 static mrb_value

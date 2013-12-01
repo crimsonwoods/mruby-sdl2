@@ -73,23 +73,14 @@ mrb_sdl2_thread_function(void *data)
   mrb_state *thread_mrb = mrb_open_allocf(mrb->allocf, mrb->ud);
 
   /* back up each field to bring back after. */
-  mrb_irep **irep         = thread_mrb->irep;
-  size_t irep_len         = thread_mrb->irep_len;
-  size_t irep_capa        = thread_mrb->irep_capa;
   struct kh_n2s *name2sym = thread_mrb->name2sym;
 
   /* set shared fields. */
-  thread_mrb->irep      = mrb->irep;
-  thread_mrb->irep_len  = mrb->irep_len;
-  thread_mrb->irep_capa = mrb->irep_capa;
   thread_mrb->name2sym  = mrb->name2sym;
 
   mrb_value const ret = mrb_yield(thread_mrb, proc, mrb_nil_value());
 
   /* bring back each fields. */
-  thread_mrb->irep      = irep;
-  thread_mrb->irep_len  = irep_len;
-  thread_mrb->irep_capa = irep_capa;
   thread_mrb->name2sym  = name2sym;
 
   /* shut down the VM */

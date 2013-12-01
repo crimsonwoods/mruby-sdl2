@@ -302,9 +302,9 @@ mrb_sdl2_video_surface_set_color_mod(mrb_state *mrb, mrb_value self)
   if (!mrb_obj_is_kind_of(mrb, color, mrb_class_get_under(mrb, mod_SDL2, "RGB"))) {
     mrb_raise(mrb, E_TYPE_ERROR, "given 1st argument is unexpected type (expected RGB).");
   }
-  uint8_t const r = mrb_fixnum(mrb_iv_get(mrb, color, mrb_intern2(mrb, "@r", 2)));
-  uint8_t const g = mrb_fixnum(mrb_iv_get(mrb, color, mrb_intern2(mrb, "@g", 2)));
-  uint8_t const b = mrb_fixnum(mrb_iv_get(mrb, color, mrb_intern2(mrb, "@b", 2)));
+  uint8_t const r = mrb_fixnum(mrb_iv_get(mrb, color, mrb_intern(mrb, "@r", 2)));
+  uint8_t const g = mrb_fixnum(mrb_iv_get(mrb, color, mrb_intern(mrb, "@g", 2)));
+  uint8_t const b = mrb_fixnum(mrb_iv_get(mrb, color, mrb_intern(mrb, "@b", 2)));
   if (0 != SDL_SetSurfaceColorMod(s, r, g, b)) {
     mruby_sdl2_raise_error(mrb);
   }
