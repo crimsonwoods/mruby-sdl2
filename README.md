@@ -22,7 +22,7 @@ build_config.rb:
       linker.library_paths << "/path/to/your/SDL2/lib"
     end
 
-# Hot to use OpenGL
+# How to use OpenGL
 ----
 
 ## Build
