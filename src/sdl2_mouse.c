@@ -272,7 +272,7 @@ mrb_sdl2_input_mouse_cursor_free(mrb_state *mrb, mrb_value self)
 void
 mruby_sdl2_mouse_init(mrb_state *mrb)
 {
-  struct RClass * mod_Input = mrb_class_get_under(mrb, mod_SDL2, "Input");
+  struct RClass * mod_Input = mrb_module_get_under(mrb, mod_SDL2, "Input");
 
   mod_Mouse = mrb_define_module_under(mrb, mod_Input, "Mouse");
 
