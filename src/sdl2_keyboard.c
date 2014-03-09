@@ -182,7 +182,7 @@ mrb_sdl2_keyboard_keysym_get_modifier(mrb_state *mrb, mrb_value self)
 void
 mruby_sdl2_keyboard_init(mrb_state *mrb)
 {
-  struct RClass *mod_Input = mrb_class_get_under(mrb, mod_SDL2, "Input");
+  struct RClass *mod_Input = mrb_module_get_under(mrb, mod_SDL2, "Input");
 
   mod_Keyboard = mrb_define_module_under(mrb, mod_Input, "Keyboard");
 
