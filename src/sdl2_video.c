@@ -495,6 +495,22 @@ mrb_sdl2_video_window_set_title(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
+mrb_sdl2_video_window_set_fullscreen(mrb_state *mrb, mrb_value self)
+{
+  mrb_sdl2_video_window_data_t *data =
+    (mrb_sdl2_video_window_data_t*)mrb_data_get_ptr(mrb, self, &mrb_sdl2_video_window_data_type);
+  if (NULL == data->window) {
+    return mrb_nil_value();
+  }
+  uint32_t flags;
+  mrb_get_args(mrb, "i", &flags);
+  if (0 != SDL_SetWindowFullscreen(data->window, flags)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return self;
+}
+
+static mrb_value
 mrb_sdl2_video_window_maximize(mrb_state *mrb, mrb_value self)
 {
   mrb_sdl2_video_window_data_t *data =
@@ -877,6 +893,7 @@ mruby_sdl2_video_init(mrb_state *mrb)
   mrb_define_method(mrb, class_Window, "position=",            mrb_sdl2_video_window_set_position,         ARGS_REQ(1));
   mrb_define_method(mrb, class_Window, "title",                mrb_sdl2_video_window_get_title,            ARGS_NONE());
   mrb_define_method(mrb, class_Window, "title=",               mrb_sdl2_video_window_set_title,            ARGS_REQ(1));
+  mrb_define_method(mrb, class_Window, "fullscreen=",          mrb_sdl2_video_window_set_fullscreen,       ARGS_REQ(1));
   mrb_define_method(mrb, class_Window, "maximize",             mrb_sdl2_video_window_maximize,             ARGS_NONE());
   mrb_define_method(mrb, class_Window, "minimize",             mrb_sdl2_video_window_minimize,             ARGS_NONE());
   mrb_define_method(mrb, class_Window, "show",                 mrb_sdl2_video_window_show,                 ARGS_NONE());
@@ -996,4 +1013,3 @@ mruby_sdl2_video_final(mrb_state *mrb)
   mruby_sdl2_video_surface_final(mrb, mod_Video);
   mruby_sdl2_video_renderer_final(mrb, mod_Video);
 }
-
