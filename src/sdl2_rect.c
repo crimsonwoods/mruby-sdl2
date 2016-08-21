@@ -510,7 +510,7 @@ mrb_sdl2_rect_point_set_x(mrb_state *mrb, mrb_value self)
 {
   mrb_int x;
   mrb_get_args(mrb, "i", &x);
-  mrb_sdl2_rect_get_ptr(mrb, self)->x = x;
+  mrb_sdl2_point_get_ptr(mrb, self)->x = x;
   return self;
 }
 
@@ -525,7 +525,7 @@ mrb_sdl2_rect_point_set_y(mrb_state *mrb, mrb_value self)
 {
   mrb_int y;
   mrb_get_args(mrb, "i", &y);
-  mrb_sdl2_rect_get_ptr(mrb, self)->y = y;
+  mrb_sdl2_point_get_ptr(mrb, self)->y = y;
   return self;
 }
 
@@ -650,4 +650,3 @@ void
 mruby_sdl2_rect_final(mrb_state *mrb)
 {
 }
-
