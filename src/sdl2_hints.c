@@ -73,10 +73,10 @@ mruby_sdl2_hints_init(mrb_state *mrb)
 {
   struct RClass *mod_Hints = mrb_define_module_under(mrb, mod_SDL2, "Hints");
 
-  mrb_define_module_function(mrb, mod_Hints, "clear",             mrb_sdl2_hints_clear,             ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Hints, "get",               mrb_sdl2_hints_get,               ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Hints, "set",               mrb_sdl2_hints_set,               ARGS_REQ(2));
-  mrb_define_module_function(mrb, mod_Hints, "set_with_priority", mrb_sdl2_hints_set_with_priority, ARGS_REQ(3));
+  mrb_define_module_function(mrb, mod_Hints, "clear",             mrb_sdl2_hints_clear,             MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Hints, "get",               mrb_sdl2_hints_get,               MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Hints, "set",               mrb_sdl2_hints_set,               MRB_ARGS_REQ(2));
+  mrb_define_module_function(mrb, mod_Hints, "set_with_priority", mrb_sdl2_hints_set_with_priority, MRB_ARGS_REQ(3));
 
   /* SDL_HintPriority */
   int arena_size = mrb_gc_arena_save(mrb);

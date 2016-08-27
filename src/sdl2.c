@@ -107,13 +107,13 @@ mruby_sdl2_module_init(mrb_state *mrb)
   mod_SDL2 = mrb_define_module(mrb, "SDL2");
   class_SDL2Error = mrb_define_class_under(mrb, mod_SDL2, "SDL2Error", mrb->eStandardError_class);
 
-  mrb_define_module_function(mrb, mod_SDL2, "init",           mrb_sdl2_init,           ARGS_OPT(1));
-  mrb_define_module_function(mrb, mod_SDL2, "quit",           mrb_sdl2_quit,           ARGS_NONE());
-  mrb_define_module_function(mrb, mod_SDL2, "init_subsystem", mrb_sdl2_init_subsystem, ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_SDL2, "quit_subsystem", mrb_sdl2_quit_subsystem, ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_SDL2, "init?",          mrb_sdl2_was_init,       ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_SDL2, "platform",       mrb_sdl2_get_platform,   ARGS_NONE());
-  mrb_define_module_function(mrb, mod_SDL2, "delay",          mrb_sdl2_delay,          ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_SDL2, "init",           mrb_sdl2_init,           MRB_ARGS_OPT(1));
+  mrb_define_module_function(mrb, mod_SDL2, "quit",           mrb_sdl2_quit,           MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_SDL2, "init_subsystem", mrb_sdl2_init_subsystem, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_SDL2, "quit_subsystem", mrb_sdl2_quit_subsystem, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_SDL2, "init?",          mrb_sdl2_was_init,       MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_SDL2, "platform",       mrb_sdl2_get_platform,   MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_SDL2, "delay",          mrb_sdl2_delay,          MRB_ARGS_REQ(1));
 
   mrb_define_const(mrb, mod_SDL2, "SDL_INIT_TIMER",          mrb_fixnum_value(SDL_INIT_TIMER));
   mrb_define_const(mrb, mod_SDL2, "SDL_INIT_AUDIO",          mrb_fixnum_value(SDL_INIT_AUDIO));

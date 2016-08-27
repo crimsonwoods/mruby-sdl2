@@ -611,39 +611,39 @@ mruby_sdl2_rect_init(mrb_state *mrb)
   MRB_SET_INSTANCE_TT(class_Point, MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_Size,  MRB_TT_DATA);
 
-  mrb_define_method(mrb, class_Rect, "initialize",         mrb_sdl2_rect_rect_initialize,        ARGS_OPT(4));
-  mrb_define_method(mrb, class_Rect, "x",                  mrb_sdl2_rect_rect_get_x,             ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "x=",                 mrb_sdl2_rect_rect_set_x,             ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "y",                  mrb_sdl2_rect_rect_get_y,             ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "y=",                 mrb_sdl2_rect_rect_set_y,             ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "w",                  mrb_sdl2_rect_rect_get_w,             ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "w=",                 mrb_sdl2_rect_rect_set_w,             ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "h",                  mrb_sdl2_rect_rect_get_h,             ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "h=",                 mrb_sdl2_rect_rect_set_h,             ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "position",           mrb_sdl2_rect_rect_get_position,      ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "position=",          mrb_sdl2_rect_rect_set_position,      ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "size",               mrb_sdl2_rect_rect_get_size,          ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "size=",              mrb_sdl2_rect_rect_set_size,          ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "has_intersection?",  mrb_sdl2_rect_rect_has_intersection,  ARGS_REQ(2));
-  mrb_define_method(mrb, class_Rect, "intersection",       mrb_sdl2_rect_rect_intersection,      ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "intersection_line",  mrb_sdl2_rect_rect_intersection_line, ARGS_REQ(2));
-  mrb_define_method(mrb, class_Rect, "empty?",             mrb_sdl2_rect_rect_is_empty,          ARGS_NONE());
-  mrb_define_method(mrb, class_Rect, "==",                 mrb_sdl2_rect_rect_equals,            ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "!=",                 mrb_sdl2_rect_rect_not_equals,        ARGS_REQ(1));
-  mrb_define_method(mrb, class_Rect, "union",              mrb_sdl2_rect_rect_union,             ARGS_REQ(1));
-  mrb_define_class_method(mrb, class_Rect, "enclose_points", mrb_sdl2_rect_rect_enclose_points, ARGS_REQ(1) | ARGS_OPT(1));
+  mrb_define_method(mrb, class_Rect, "initialize",         mrb_sdl2_rect_rect_initialize,        MRB_ARGS_OPT(4));
+  mrb_define_method(mrb, class_Rect, "x",                  mrb_sdl2_rect_rect_get_x,             MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "x=",                 mrb_sdl2_rect_rect_set_x,             MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "y",                  mrb_sdl2_rect_rect_get_y,             MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "y=",                 mrb_sdl2_rect_rect_set_y,             MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "w",                  mrb_sdl2_rect_rect_get_w,             MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "w=",                 mrb_sdl2_rect_rect_set_w,             MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "h",                  mrb_sdl2_rect_rect_get_h,             MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "h=",                 mrb_sdl2_rect_rect_set_h,             MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "position",           mrb_sdl2_rect_rect_get_position,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "position=",          mrb_sdl2_rect_rect_set_position,      MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "size",               mrb_sdl2_rect_rect_get_size,          MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "size=",              mrb_sdl2_rect_rect_set_size,          MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "has_intersection?",  mrb_sdl2_rect_rect_has_intersection,  MRB_ARGS_REQ(2));
+  mrb_define_method(mrb, class_Rect, "intersection",       mrb_sdl2_rect_rect_intersection,      MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "intersection_line",  mrb_sdl2_rect_rect_intersection_line, MRB_ARGS_REQ(2));
+  mrb_define_method(mrb, class_Rect, "empty?",             mrb_sdl2_rect_rect_is_empty,          MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Rect, "==",                 mrb_sdl2_rect_rect_equals,            MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "!=",                 mrb_sdl2_rect_rect_not_equals,        MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Rect, "union",              mrb_sdl2_rect_rect_union,             MRB_ARGS_REQ(1));
+  mrb_define_class_method(mrb, class_Rect, "enclose_points", mrb_sdl2_rect_rect_enclose_points, MRB_ARGS_REQ(1) | MRB_ARGS_OPT(1));
 
-  mrb_define_method(mrb, class_Point, "initialize", mrb_sdl2_rect_point_initialize, ARGS_OPT(2));
-  mrb_define_method(mrb, class_Point, "x",          mrb_sdl2_rect_point_get_x,      ARGS_NONE());
-  mrb_define_method(mrb, class_Point, "x=",         mrb_sdl2_rect_point_set_x,      ARGS_REQ(1));
-  mrb_define_method(mrb, class_Point, "y",          mrb_sdl2_rect_point_get_y,      ARGS_NONE());
-  mrb_define_method(mrb, class_Point, "y=",         mrb_sdl2_rect_point_set_y,      ARGS_REQ(1));
+  mrb_define_method(mrb, class_Point, "initialize", mrb_sdl2_rect_point_initialize, MRB_ARGS_OPT(2));
+  mrb_define_method(mrb, class_Point, "x",          mrb_sdl2_rect_point_get_x,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Point, "x=",         mrb_sdl2_rect_point_set_x,      MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Point, "y",          mrb_sdl2_rect_point_get_y,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Point, "y=",         mrb_sdl2_rect_point_set_y,      MRB_ARGS_REQ(1));
 
-  mrb_define_method(mrb, class_Size, "initialize", mrb_sdl2_rect_size_initialize, ARGS_OPT(2));
-  mrb_define_method(mrb, class_Size, "w",          mrb_sdl2_rect_size_get_w,      ARGS_NONE());
-  mrb_define_method(mrb, class_Size, "w=",         mrb_sdl2_rect_size_set_w,      ARGS_REQ(1));
-  mrb_define_method(mrb, class_Size, "h",          mrb_sdl2_rect_size_get_h,      ARGS_NONE());
-  mrb_define_method(mrb, class_Size, "h=",         mrb_sdl2_rect_size_set_h,      ARGS_REQ(1));
+  mrb_define_method(mrb, class_Size, "initialize", mrb_sdl2_rect_size_initialize, MRB_ARGS_OPT(2));
+  mrb_define_method(mrb, class_Size, "w",          mrb_sdl2_rect_size_get_w,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Size, "w=",         mrb_sdl2_rect_size_set_w,      MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Size, "h",          mrb_sdl2_rect_size_get_h,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Size, "h=",         mrb_sdl2_rect_size_set_h,      MRB_ARGS_REQ(1));
 }
 
 void

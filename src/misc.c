@@ -463,19 +463,19 @@ mruby_sdl2_misc_init(mrb_state *mrb)
   MRB_SET_INSTANCE_TT(class_FloatBuffer, MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_ByteBuffer,  MRB_TT_DATA);
 
-  mrb_define_method(mrb, class_Buffer, "initialize", mrb_sdl2_misc_buffer_initialize,  ARGS_REQ(1));
-  mrb_define_method(mrb, class_Buffer, "address",    mrb_sdl2_misc_buffer_get_address, ARGS_NONE());
-  mrb_define_method(mrb, class_Buffer, "size",       mrb_sdl2_misc_buffer_get_size,    ARGS_NONE());
-  mrb_define_method(mrb, class_Buffer, "cptr",       mrb_sdl2_misc_buffer_get_cptr,    ARGS_NONE());
+  mrb_define_method(mrb, class_Buffer, "initialize", mrb_sdl2_misc_buffer_initialize,  MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Buffer, "address",    mrb_sdl2_misc_buffer_get_address, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Buffer, "size",       mrb_sdl2_misc_buffer_get_size,    MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Buffer, "cptr",       mrb_sdl2_misc_buffer_get_cptr,    MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, class_FloatBuffer, "initialize", mrb_sdl2_misc_floatbuffer_initialize, ARGS_REQ(1));
-  mrb_define_method(mrb, class_FloatBuffer, "size",       mrb_sdl2_misc_floatbuffer_get_size,   ARGS_NONE());
-  mrb_define_method(mrb, class_FloatBuffer, "[]",         mrb_sdl2_misc_floatbuffer_get_at,     ARGS_REQ(1));
-  mrb_define_method(mrb, class_FloatBuffer, "[]=",        mrb_sdl2_misc_floatbuffer_set_at,     ARGS_REQ(2));
+  mrb_define_method(mrb, class_FloatBuffer, "initialize", mrb_sdl2_misc_floatbuffer_initialize, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_FloatBuffer, "size",       mrb_sdl2_misc_floatbuffer_get_size,   MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_FloatBuffer, "[]",         mrb_sdl2_misc_floatbuffer_get_at,     MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_FloatBuffer, "[]=",        mrb_sdl2_misc_floatbuffer_set_at,     MRB_ARGS_REQ(2));
 
-  mrb_define_method(mrb, class_ByteBuffer, "initialize", mrb_sdl2_misc_bytebuffer_initialize, ARGS_REQ(1));
-  mrb_define_method(mrb, class_ByteBuffer, "[]",         mrb_sdl2_misc_bytebuffer_get_at,     ARGS_REQ(1));
-  mrb_define_method(mrb, class_ByteBuffer, "[]=",        mrb_sdl2_misc_bytebuffer_set_at,     ARGS_REQ(2));
+  mrb_define_method(mrb, class_ByteBuffer, "initialize", mrb_sdl2_misc_bytebuffer_initialize, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_ByteBuffer, "[]",         mrb_sdl2_misc_bytebuffer_get_at,     MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_ByteBuffer, "[]=",        mrb_sdl2_misc_bytebuffer_set_at,     MRB_ARGS_REQ(2));
 }
 
 void

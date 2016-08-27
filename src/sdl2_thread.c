@@ -174,12 +174,12 @@ mruby_sdl2_thread_init(mrb_state *mrb)
 
   MRB_SET_INSTANCE_TT(class_Thread, MRB_TT_DATA);
 
-  mrb_define_method(mrb, class_Thread, "initialize", mrb_sdl2_thread_initialize,   ARGS_BLOCK());
-  mrb_define_method(mrb, class_Thread, "wait",       mrb_sdl2_thread_wait,         ARGS_NONE());
-  mrb_define_method(mrb, class_Thread, "join",       mrb_sdl2_thread_wait,         ARGS_NONE());
-  mrb_define_method(mrb, class_Thread, "id",         mrb_sdl2_thread_get_id,       ARGS_NONE());
+  mrb_define_method(mrb, class_Thread, "initialize", mrb_sdl2_thread_initialize,   MRB_ARGS_BLOCK());
+  mrb_define_method(mrb, class_Thread, "wait",       mrb_sdl2_thread_wait,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Thread, "join",       mrb_sdl2_thread_wait,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Thread, "id",         mrb_sdl2_thread_get_id,       MRB_ARGS_NONE());
 
-  mrb_define_class_method(mrb, class_Thread, "priority=",  mrb_sdl2_thread_set_priority, ARGS_REQ(1));
+  mrb_define_class_method(mrb, class_Thread, "priority=",  mrb_sdl2_thread_set_priority, MRB_ARGS_REQ(1));
 
   /* SDL_ThreadPriority */
   int arena_size = mrb_gc_arena_save(mrb);

@@ -161,12 +161,12 @@ mruby_sdl2_timer_init(mrb_state *mrb)
 {
   mod_Timer = mrb_define_module_under(mrb, mod_SDL2, "Timer");
 
-  mrb_define_module_function(mrb, mod_Timer, "ticks",        mrb_sdl2_timer_get_ticks,                 ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Timer, "delay",        mrb_sdl2_timer_delay,                     ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Timer, "perf_freq",    mrb_sdl2_timer_get_performance_frequency, ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Timer, "perf_counter", mrb_sdl2_timer_get_performance_counter,   ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Timer, "add",          mrb_sdl2_timer_add,                       ARGS_REQ(1) | ARGS_BLOCK());
-  mrb_define_module_function(mrb, mod_Timer, "remove",       mrb_sdl2_timer_remove,                    ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Timer, "ticks",        mrb_sdl2_timer_get_ticks,                 MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Timer, "delay",        mrb_sdl2_timer_delay,                     MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Timer, "perf_freq",    mrb_sdl2_timer_get_performance_frequency, MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Timer, "perf_counter", mrb_sdl2_timer_get_performance_counter,   MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Timer, "add",          mrb_sdl2_timer_add,                       MRB_ARGS_REQ(1) | MRB_ARGS_BLOCK());
+  mrb_define_module_function(mrb, mod_Timer, "remove",       mrb_sdl2_timer_remove,                    MRB_ARGS_REQ(1));
 }
 
 void

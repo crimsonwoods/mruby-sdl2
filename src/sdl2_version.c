@@ -128,15 +128,15 @@ mruby_sdl2_version_init(mrb_state *mrb)
 
   MRB_SET_INSTANCE_TT(class_Version, MRB_TT_DATA);
 
-  mrb_define_method(mrb, class_Version, "major",        mrb_sdl2_version_get_major,        ARGS_NONE());
-  mrb_define_method(mrb, class_Version, "minor",        mrb_sdl2_version_get_minor,        ARGS_NONE());
-  mrb_define_method(mrb, class_Version, "patch",        mrb_sdl2_version_get_patch,        ARGS_NONE());
-  mrb_define_method(mrb, class_Version, "revision",     mrb_sdl2_version_get_revision,     ARGS_NONE());
-  mrb_define_method(mrb, class_Version, "revision_str", mrb_sdl2_version_get_revision_str, ARGS_NONE());
-  mrb_define_method(mrb, class_Version, "to_s",         mrb_sdl2_version_to_s,             ARGS_NONE());
+  mrb_define_method(mrb, class_Version, "major",        mrb_sdl2_version_get_major,        MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Version, "minor",        mrb_sdl2_version_get_minor,        MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Version, "patch",        mrb_sdl2_version_get_patch,        MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Version, "revision",     mrb_sdl2_version_get_revision,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Version, "revision_str", mrb_sdl2_version_get_revision_str, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Version, "to_s",         mrb_sdl2_version_to_s,             MRB_ARGS_NONE());
 
-  mrb_define_class_method(mrb, class_Version, "compiled", mrb_sdl2_version_get_compiled, ARGS_NONE());
-  mrb_define_class_method(mrb, class_Version, "linked",   mrb_sdl2_version_get_linked,   ARGS_NONE());
+  mrb_define_class_method(mrb, class_Version, "compiled", mrb_sdl2_version_get_compiled, MRB_ARGS_NONE());
+  mrb_define_class_method(mrb, class_Version, "linked",   mrb_sdl2_version_get_linked,   MRB_ARGS_NONE());
 }
 
 void
