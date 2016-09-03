@@ -829,67 +829,67 @@ mruby_sdl2_events_init(mrb_state *mrb)
   MRB_SET_INSTANCE_TT(class_UserEvent,             MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_WindowEvent,           MRB_TT_DATA);
 
-  mrb_define_module_function(mrb, mod_Input, "poll",            mrb_sdl2_input_poll,              ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Input, "wait",            mrb_sdl2_input_wait,              ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Input, "wait_timeout",    mrb_sdl2_input_wait_timeout,      ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Input, "event_state",     mrb_sdl2_input_event_state,       ARGS_REQ(2));
-  mrb_define_module_function(mrb, mod_Input, "flush",           mrb_sdl2_input_flush_event,       ARGS_REQ(1) | ARGS_OPT(1));
-  mrb_define_module_function(mrb, mod_Input, "has_events?",     mrb_sdl2_input_has_events,        ARGS_REQ(1) | ARGS_OPT(1));
-  mrb_define_module_function(mrb, mod_Input, "quit_requested?", mrb_sdl2_input_is_quit_requested, ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Input, "register",        mrb_sdl2_input_register,          ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Input, "push",            mrb_sdl2_input_push,              ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Input, "poll",            mrb_sdl2_input_poll,              MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Input, "wait",            mrb_sdl2_input_wait,              MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Input, "wait_timeout",    mrb_sdl2_input_wait_timeout,      MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Input, "event_state",     mrb_sdl2_input_event_state,       MRB_ARGS_REQ(2));
+  mrb_define_module_function(mrb, mod_Input, "flush",           mrb_sdl2_input_flush_event,       MRB_ARGS_REQ(1) | MRB_ARGS_OPT(1));
+  mrb_define_module_function(mrb, mod_Input, "has_events?",     mrb_sdl2_input_has_events,        MRB_ARGS_REQ(1) | MRB_ARGS_OPT(1));
+  mrb_define_module_function(mrb, mod_Input, "quit_requested?", mrb_sdl2_input_is_quit_requested, MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Input, "register",        mrb_sdl2_input_register,          MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Input, "push",            mrb_sdl2_input_push,              MRB_ARGS_REQ(1));
 
-  mrb_define_method(mrb, class_Event, "type", mrb_sdl2_input_event_get_type, ARGS_NONE());
+  mrb_define_method(mrb, class_Event, "type", mrb_sdl2_input_event_get_type, MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, class_KeyboardEvent, "timestamp", mrb_sdl2_input_keyboardevent_get_timestamp, ARGS_NONE());
-  mrb_define_method(mrb, class_KeyboardEvent, "window_id", mrb_sdl2_input_keyboardevent_get_window_id, ARGS_NONE());
-  mrb_define_method(mrb, class_KeyboardEvent, "state",     mrb_sdl2_input_keyboardevent_get_state,     ARGS_NONE());
-  mrb_define_method(mrb, class_KeyboardEvent, "repeat",    mrb_sdl2_input_keyboardevent_get_repeat,    ARGS_NONE());
-  mrb_define_method(mrb, class_KeyboardEvent, "keysym",    mrb_sdl2_input_keyboardevent_get_keysym,    ARGS_NONE());
+  mrb_define_method(mrb, class_KeyboardEvent, "timestamp", mrb_sdl2_input_keyboardevent_get_timestamp, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_KeyboardEvent, "window_id", mrb_sdl2_input_keyboardevent_get_window_id, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_KeyboardEvent, "state",     mrb_sdl2_input_keyboardevent_get_state,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_KeyboardEvent, "repeat",    mrb_sdl2_input_keyboardevent_get_repeat,    MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_KeyboardEvent, "keysym",    mrb_sdl2_input_keyboardevent_get_keysym,    MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, class_MouseButtonEvent, "timestamp", mrb_sdl2_input_mousebuttonevent_get_timestamp, ARGS_NONE());
-  mrb_define_method(mrb, class_MouseButtonEvent, "window_id", mrb_sdl2_input_mousebuttonevent_get_window_id, ARGS_NONE());
-  mrb_define_method(mrb, class_MouseButtonEvent, "which",     mrb_sdl2_input_mousebuttonevent_get_which,     ARGS_NONE());
-  mrb_define_method(mrb, class_MouseButtonEvent, "button",    mrb_sdl2_input_mousebuttonevent_get_button,    ARGS_NONE());
-  mrb_define_method(mrb, class_MouseButtonEvent, "state",     mrb_sdl2_input_mousebuttonevent_get_state,     ARGS_NONE());
-  mrb_define_method(mrb, class_MouseButtonEvent, "x",         mrb_sdl2_input_mousebuttonevent_get_x,         ARGS_NONE());
-  mrb_define_method(mrb, class_MouseButtonEvent, "y",         mrb_sdl2_input_mousebuttonevent_get_y,         ARGS_NONE());
+  mrb_define_method(mrb, class_MouseButtonEvent, "timestamp", mrb_sdl2_input_mousebuttonevent_get_timestamp, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseButtonEvent, "window_id", mrb_sdl2_input_mousebuttonevent_get_window_id, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseButtonEvent, "which",     mrb_sdl2_input_mousebuttonevent_get_which,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseButtonEvent, "button",    mrb_sdl2_input_mousebuttonevent_get_button,    MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseButtonEvent, "state",     mrb_sdl2_input_mousebuttonevent_get_state,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseButtonEvent, "x",         mrb_sdl2_input_mousebuttonevent_get_x,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseButtonEvent, "y",         mrb_sdl2_input_mousebuttonevent_get_y,         MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, class_MouseMotionEvent, "timestamp", mrb_sdl2_input_mousemotionevent_get_timestamp, ARGS_NONE());
-  mrb_define_method(mrb, class_MouseMotionEvent, "window_id", mrb_sdl2_input_mousemotionevent_get_window_id, ARGS_NONE());
-  mrb_define_method(mrb, class_MouseMotionEvent, "which",     mrb_sdl2_input_mousemotionevent_get_which,     ARGS_NONE());
-  mrb_define_method(mrb, class_MouseMotionEvent, "state",     mrb_sdl2_input_mousemotionevent_get_state,     ARGS_NONE());
-  mrb_define_method(mrb, class_MouseMotionEvent, "x",         mrb_sdl2_input_mousemotionevent_get_x,         ARGS_NONE());
-  mrb_define_method(mrb, class_MouseMotionEvent, "y",         mrb_sdl2_input_mousemotionevent_get_y,         ARGS_NONE());
-  mrb_define_method(mrb, class_MouseMotionEvent, "xrel",      mrb_sdl2_input_mousemotionevent_get_xrel,      ARGS_NONE());
-  mrb_define_method(mrb, class_MouseMotionEvent, "yrel",      mrb_sdl2_input_mousemotionevent_get_yrel,      ARGS_NONE());
+  mrb_define_method(mrb, class_MouseMotionEvent, "timestamp", mrb_sdl2_input_mousemotionevent_get_timestamp, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseMotionEvent, "window_id", mrb_sdl2_input_mousemotionevent_get_window_id, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseMotionEvent, "which",     mrb_sdl2_input_mousemotionevent_get_which,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseMotionEvent, "state",     mrb_sdl2_input_mousemotionevent_get_state,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseMotionEvent, "x",         mrb_sdl2_input_mousemotionevent_get_x,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseMotionEvent, "y",         mrb_sdl2_input_mousemotionevent_get_y,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseMotionEvent, "xrel",      mrb_sdl2_input_mousemotionevent_get_xrel,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseMotionEvent, "yrel",      mrb_sdl2_input_mousemotionevent_get_yrel,      MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, class_MouseWheelEvent, "timestamp", mrb_sdl2_input_mousewheelevent_get_timestamp, ARGS_NONE());
-  mrb_define_method(mrb, class_MouseWheelEvent, "window_id", mrb_sdl2_input_mousewheelevent_get_window_id, ARGS_NONE());
-  mrb_define_method(mrb, class_MouseWheelEvent, "which",     mrb_sdl2_input_mousewheelevent_get_which,     ARGS_NONE());
-  mrb_define_method(mrb, class_MouseWheelEvent, "x",         mrb_sdl2_input_mousewheelevent_get_x,         ARGS_NONE());
-  mrb_define_method(mrb, class_MouseWheelEvent, "y",         mrb_sdl2_input_mousewheelevent_get_y,         ARGS_NONE());
+  mrb_define_method(mrb, class_MouseWheelEvent, "timestamp", mrb_sdl2_input_mousewheelevent_get_timestamp, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseWheelEvent, "window_id", mrb_sdl2_input_mousewheelevent_get_window_id, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseWheelEvent, "which",     mrb_sdl2_input_mousewheelevent_get_which,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseWheelEvent, "x",         mrb_sdl2_input_mousewheelevent_get_x,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_MouseWheelEvent, "y",         mrb_sdl2_input_mousewheelevent_get_y,         MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, class_QuitEvent, "timestamp", mrb_sdl2_input_quitevent_timestamp, ARGS_NONE());
+  mrb_define_method(mrb, class_QuitEvent, "timestamp", mrb_sdl2_input_quitevent_timestamp, MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, class_UserEvent, "initialize",  mrb_sdl2_input_userevent_initialize,    ARGS_REQ(2) | ARGS_OPT(2));
-  mrb_define_method(mrb, class_UserEvent, "type=",       mrb_sdl2_input_userevent_set_type,      ARGS_REQ(1));
-  mrb_define_method(mrb, class_UserEvent, "timestamp",   mrb_sdl2_input_userevent_get_timestamp, ARGS_NONE());
-  mrb_define_method(mrb, class_UserEvent, "timestamp=",  mrb_sdl2_input_userevent_set_timestamp, ARGS_REQ(1));
-  mrb_define_method(mrb, class_UserEvent, "window_id",   mrb_sdl2_input_userevent_get_window_id, ARGS_NONE());
-  mrb_define_method(mrb, class_UserEvent, "window_id=",  mrb_sdl2_input_userevent_set_window_id, ARGS_REQ(1));
-  mrb_define_method(mrb, class_UserEvent, "code",        mrb_sdl2_input_userevent_get_code,      ARGS_NONE());
-  mrb_define_method(mrb, class_UserEvent, "code=",       mrb_sdl2_input_userevent_set_code,      ARGS_REQ(1));
-  mrb_define_method(mrb, class_UserEvent, "data1",       mrb_sdl2_input_userevent_get_data1,     ARGS_NONE());
-  mrb_define_method(mrb, class_UserEvent, "data1=",      mrb_sdl2_input_userevent_set_data1,     ARGS_REQ(1));
-  mrb_define_method(mrb, class_UserEvent, "data2",       mrb_sdl2_input_userevent_get_data2,     ARGS_NONE());
-  mrb_define_method(mrb, class_UserEvent, "data2=",      mrb_sdl2_input_userevent_set_data2,     ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "initialize",  mrb_sdl2_input_userevent_initialize,    MRB_ARGS_REQ(2) | MRB_ARGS_OPT(2));
+  mrb_define_method(mrb, class_UserEvent, "type=",       mrb_sdl2_input_userevent_set_type,      MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "timestamp",   mrb_sdl2_input_userevent_get_timestamp, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "timestamp=",  mrb_sdl2_input_userevent_set_timestamp, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "window_id",   mrb_sdl2_input_userevent_get_window_id, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "window_id=",  mrb_sdl2_input_userevent_set_window_id, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "code",        mrb_sdl2_input_userevent_get_code,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "code=",       mrb_sdl2_input_userevent_set_code,      MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "data1",       mrb_sdl2_input_userevent_get_data1,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "data1=",      mrb_sdl2_input_userevent_set_data1,     MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_UserEvent, "data2",       mrb_sdl2_input_userevent_get_data2,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_UserEvent, "data2=",      mrb_sdl2_input_userevent_set_data2,     MRB_ARGS_REQ(1));
 
-  mrb_define_method(mrb, class_WindowEvent, "timestamp", mrb_sdl2_input_windowevent_get_timestamp, ARGS_NONE());
-  mrb_define_method(mrb, class_WindowEvent, "window_id", mrb_sdl2_input_windowevent_get_window_id, ARGS_NONE());
-  mrb_define_method(mrb, class_WindowEvent, "event",     mrb_sdl2_input_windowevent_get_event,     ARGS_NONE());
-  mrb_define_method(mrb, class_WindowEvent, "data1",     mrb_sdl2_input_windowevent_get_data1,     ARGS_NONE());
-  mrb_define_method(mrb, class_WindowEvent, "data2",     mrb_sdl2_input_windowevent_get_data2,     ARGS_NONE());
+  mrb_define_method(mrb, class_WindowEvent, "timestamp", mrb_sdl2_input_windowevent_get_timestamp, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_WindowEvent, "window_id", mrb_sdl2_input_windowevent_get_window_id, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_WindowEvent, "event",     mrb_sdl2_input_windowevent_get_event,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_WindowEvent, "data1",     mrb_sdl2_input_windowevent_get_data1,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_WindowEvent, "data2",     mrb_sdl2_input_windowevent_get_data2,     MRB_ARGS_NONE());
 
   int arena_size = mrb_gc_arena_save(mrb);
 

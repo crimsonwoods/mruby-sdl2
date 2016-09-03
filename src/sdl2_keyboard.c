@@ -186,26 +186,26 @@ mruby_sdl2_keyboard_init(mrb_state *mrb)
 
   mod_Keyboard = mrb_define_module_under(mrb, mod_Input, "Keyboard");
 
-  mrb_define_module_function(mrb, mod_Keyboard, "key_from_name",      mrb_sdl2_keyboard_key_from_name,      ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Keyboard, "key_from_scancode",  mrb_sdl2_keyboard_key_from_scancode,  ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Keyboard, "key_name",           mrb_sdl2_keyboard_key_name,           ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Keyboard, "keyboard_focus",     mrb_sdl2_keyboard_keyboard_focus,     ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Keyboard, "mod_state",          mrb_sdl2_keyboard_get_mod_state,      ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Keyboard, "mod_state=",         mrb_sdl2_keyboard_set_mod_state,      ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Keyboard, "scancode_from_key",  mrb_sdl2_keyboard_scancode_from_key,  ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Keyboard, "scancode_from_name", mrb_sdl2_keyboard_scancode_from_name, ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Keyboard, "scancode_name",      mrb_sdl2_keyboard_scancode_name,      ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Keyboard, "text_input_rect",    mrb_sdl2_keyboard_text_input_rect,    ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Keyboard, "text_input_start",   mrb_sdl2_keyboard_text_input_start,   ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Keyboard, "text_input_stop",    mrb_sdl2_keyboard_text_input_stop,    ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Keyboard, "key_from_name",      mrb_sdl2_keyboard_key_from_name,      MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Keyboard, "key_from_scancode",  mrb_sdl2_keyboard_key_from_scancode,  MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Keyboard, "key_name",           mrb_sdl2_keyboard_key_name,           MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Keyboard, "keyboard_focus",     mrb_sdl2_keyboard_keyboard_focus,     MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Keyboard, "mod_state",          mrb_sdl2_keyboard_get_mod_state,      MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Keyboard, "mod_state=",         mrb_sdl2_keyboard_set_mod_state,      MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Keyboard, "scancode_from_key",  mrb_sdl2_keyboard_scancode_from_key,  MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Keyboard, "scancode_from_name", mrb_sdl2_keyboard_scancode_from_name, MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Keyboard, "scancode_name",      mrb_sdl2_keyboard_scancode_name,      MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Keyboard, "text_input_rect",    mrb_sdl2_keyboard_text_input_rect,    MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Keyboard, "text_input_start",   mrb_sdl2_keyboard_text_input_start,   MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Keyboard, "text_input_stop",    mrb_sdl2_keyboard_text_input_stop,    MRB_ARGS_NONE());
 
   class_Keysym = mrb_define_class_under(mrb, mod_Keyboard, "Keysym", mrb->object_class);
 
   MRB_SET_INSTANCE_TT(class_Keysym, MRB_TT_DATA);
 
-  mrb_define_method(mrb, class_Keysym, "scancode", mrb_sdl2_keyboard_keysym_get_scancode, ARGS_NONE());
-  mrb_define_method(mrb, class_Keysym, "symbol",   mrb_sdl2_keyboard_keysym_get_symbol,   ARGS_NONE());
-  mrb_define_method(mrb, class_Keysym, "modifier", mrb_sdl2_keyboard_keysym_get_modifier, ARGS_NONE());
+  mrb_define_method(mrb, class_Keysym, "scancode", mrb_sdl2_keyboard_keysym_get_scancode, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Keysym, "symbol",   mrb_sdl2_keyboard_keysym_get_symbol,   MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Keysym, "modifier", mrb_sdl2_keyboard_keysym_get_modifier, MRB_ARGS_NONE());
 
   int arena_size = mrb_gc_arena_save(mrb);
 

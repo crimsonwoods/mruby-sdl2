@@ -415,26 +415,26 @@ mruby_sdl2_mutex_init(mrb_state *mrb)
   MRB_SET_INSTANCE_TT(class_Semaphore, MRB_TT_DATA);
   MRB_SET_INSTANCE_TT(class_Cond,      MRB_TT_DATA);
 
-  mrb_define_method(mrb, class_Mutex, "initialize", mrb_sdl2_mutex_initialize, ARGS_NONE());
-  mrb_define_method(mrb, class_Mutex, "destroy",    mrb_sdl2_mutex_destroy,    ARGS_NONE());
-  mrb_define_method(mrb, class_Mutex, "lock",       mrb_sdl2_mutex_lock,       ARGS_NONE());
-  mrb_define_method(mrb, class_Mutex, "try_lock",   mrb_sdl2_mutex_try_lock,   ARGS_NONE());
-  mrb_define_method(mrb, class_Mutex, "unlock",     mrb_sdl2_mutex_unlock,     ARGS_NONE());
+  mrb_define_method(mrb, class_Mutex, "initialize", mrb_sdl2_mutex_initialize, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Mutex, "destroy",    mrb_sdl2_mutex_destroy,    MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Mutex, "lock",       mrb_sdl2_mutex_lock,       MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Mutex, "try_lock",   mrb_sdl2_mutex_try_lock,   MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Mutex, "unlock",     mrb_sdl2_mutex_unlock,     MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, class_Semaphore, "initialize",   mrb_sdl2_semaphore_initialize,   ARGS_REQ(1));
-  mrb_define_method(mrb, class_Semaphore, "destroy",      mrb_sdl2_semaphore_destroy,      ARGS_NONE());
-  mrb_define_method(mrb, class_Semaphore, "post",         mrb_sdl2_semaphore_post,         ARGS_NONE());
-  mrb_define_method(mrb, class_Semaphore, "wait",         mrb_sdl2_semaphore_wait,         ARGS_NONE());
-  mrb_define_method(mrb, class_Semaphore, "try_wait",     mrb_sdl2_semaphore_try_wait,     ARGS_NONE());
-  mrb_define_method(mrb, class_Semaphore, "wait_timeout", mrb_sdl2_semaphore_wait_timeout, ARGS_REQ(1));
-  mrb_define_method(mrb, class_Semaphore, "value",        mrb_sdl2_semaphore_get_value,    ARGS_NONE());
+  mrb_define_method(mrb, class_Semaphore, "initialize",   mrb_sdl2_semaphore_initialize,   MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Semaphore, "destroy",      mrb_sdl2_semaphore_destroy,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Semaphore, "post",         mrb_sdl2_semaphore_post,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Semaphore, "wait",         mrb_sdl2_semaphore_wait,         MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Semaphore, "try_wait",     mrb_sdl2_semaphore_try_wait,     MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Semaphore, "wait_timeout", mrb_sdl2_semaphore_wait_timeout, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Semaphore, "value",        mrb_sdl2_semaphore_get_value,    MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, class_Cond, "initialize",   mrb_sdl2_cond_initialize,   ARGS_NONE());
-  mrb_define_method(mrb, class_Cond, "destroy",      mrb_sdl2_cond_destroy,      ARGS_NONE());
-  mrb_define_method(mrb, class_Cond, "broadcast",    mrb_sdl2_cond_broadcast,    ARGS_NONE());
-  mrb_define_method(mrb, class_Cond, "signal",       mrb_sdl2_cond_signal,       ARGS_NONE());
-  mrb_define_method(mrb, class_Cond, "wait",         mrb_sdl2_cond_wait,         ARGS_REQ(1));
-  mrb_define_method(mrb, class_Cond, "wait_timeout", mrb_sdl2_cond_wait_timeout, ARGS_REQ(2));
+  mrb_define_method(mrb, class_Cond, "initialize",   mrb_sdl2_cond_initialize,   MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Cond, "destroy",      mrb_sdl2_cond_destroy,      MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Cond, "broadcast",    mrb_sdl2_cond_broadcast,    MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Cond, "signal",       mrb_sdl2_cond_signal,       MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Cond, "wait",         mrb_sdl2_cond_wait,         MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Cond, "wait_timeout", mrb_sdl2_cond_wait_timeout, MRB_ARGS_REQ(2));
 }
 
 void

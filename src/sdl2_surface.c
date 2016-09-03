@@ -387,31 +387,31 @@ mruby_sdl2_video_surface_init(mrb_state *mrb, struct RClass *mod_Video)
 
   MRB_SET_INSTANCE_TT(class_Surface, MRB_TT_DATA);
 
-  mrb_define_method(mrb, class_Surface, "initialize",     mrb_sdl2_video_surface_initialize,     ARGS_REQ(8));
-  mrb_define_method(mrb, class_Surface, "free",           mrb_sdl2_video_surface_free,           ARGS_NONE());
-  mrb_define_method(mrb, class_Surface, "destroy",        mrb_sdl2_video_surface_free,           ARGS_NONE());
-  mrb_define_method(mrb, class_Surface, "blit_scaled",    mrb_sdl2_video_surface_blit_scaled,    ARGS_REQ(2) | ARGS_OPT(1));
-  mrb_define_method(mrb, class_Surface, "blit_surface",   mrb_sdl2_video_surface_blit_surface,   ARGS_REQ(3));
-  mrb_define_method(mrb, class_Surface, "convert_format", mrb_sdl2_video_surface_convert_format, ARGS_REQ(2));
-  mrb_define_method(mrb, class_Surface, "fill_rect",      mrb_sdl2_video_surface_fill_rect,      ARGS_REQ(1) | ARGS_OPT(1));
-  mrb_define_method(mrb, class_Surface, "fill_rects",     mrb_sdl2_video_surface_fill_rects,     ARGS_REQ(2));
-  mrb_define_method(mrb, class_Surface, "clip_rect",      mrb_sdl2_video_surface_get_clip_rect,  ARGS_NONE());
-  mrb_define_method(mrb, class_Surface, "clip_rect=",     mrb_sdl2_video_surface_set_clip_rect,  ARGS_REQ(1));
-  mrb_define_method(mrb, class_Surface, "color_key_get",  mrb_sdl2_video_surface_get_color_key,  ARGS_NONE());
-  mrb_define_method(mrb, class_Surface, "color_key_set",  mrb_sdl2_video_surface_get_solor_key,  ARGS_REQ(2));
-  mrb_define_method(mrb, class_Surface, "alpha_mod",      mrb_sdl2_video_surface_get_alpha_mod,  ARGS_NONE());
-  mrb_define_method(mrb, class_Surface, "alpha_mod=",     mrb_sdl2_video_surface_set_alpha_mod,  ARGS_REQ(1));
-  mrb_define_method(mrb, class_Surface, "blend_mode",     mrb_sdl2_video_surface_get_blend_mode, ARGS_NONE());
-  mrb_define_method(mrb, class_Surface, "blend_mode=",    mrb_sdl2_video_surface_set_blend_mode, ARGS_REQ(1));
-  mrb_define_method(mrb, class_Surface, "color_mod",      mrb_sdl2_video_surface_get_color_mod,  ARGS_NONE());
-  mrb_define_method(mrb, class_Surface, "color_mod=",     mrb_sdl2_video_surface_set_color_mod,  ARGS_REQ(1));
-  mrb_define_method(mrb, class_Surface, "palette",        mrb_sdl2_video_surface_set_palette,    ARGS_REQ(1));
-  mrb_define_method(mrb, class_Surface, "rle",            mrb_sdl2_video_surface_set_rle,        ARGS_REQ(1));
-  mrb_define_method(mrb, class_Surface, "lock",           mrb_sdl2_video_surface_lock,           ARGS_NONE());
-  mrb_define_method(mrb, class_Surface, "unlock",         mrb_sdl2_video_surface_unlock,         ARGS_NONE());
+  mrb_define_method(mrb, class_Surface, "initialize",     mrb_sdl2_video_surface_initialize,     MRB_ARGS_REQ(8));
+  mrb_define_method(mrb, class_Surface, "free",           mrb_sdl2_video_surface_free,           MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Surface, "destroy",        mrb_sdl2_video_surface_free,           MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Surface, "blit_scaled",    mrb_sdl2_video_surface_blit_scaled,    MRB_ARGS_REQ(2) | MRB_ARGS_OPT(1));
+  mrb_define_method(mrb, class_Surface, "blit_surface",   mrb_sdl2_video_surface_blit_surface,   MRB_ARGS_REQ(3));
+  mrb_define_method(mrb, class_Surface, "convert_format", mrb_sdl2_video_surface_convert_format, MRB_ARGS_REQ(2));
+  mrb_define_method(mrb, class_Surface, "fill_rect",      mrb_sdl2_video_surface_fill_rect,      MRB_ARGS_REQ(1) | MRB_ARGS_OPT(1));
+  mrb_define_method(mrb, class_Surface, "fill_rects",     mrb_sdl2_video_surface_fill_rects,     MRB_ARGS_REQ(2));
+  mrb_define_method(mrb, class_Surface, "clip_rect",      mrb_sdl2_video_surface_get_clip_rect,  MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Surface, "clip_rect=",     mrb_sdl2_video_surface_set_clip_rect,  MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Surface, "color_key_get",  mrb_sdl2_video_surface_get_color_key,  MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Surface, "color_key_set",  mrb_sdl2_video_surface_get_solor_key,  MRB_ARGS_REQ(2));
+  mrb_define_method(mrb, class_Surface, "alpha_mod",      mrb_sdl2_video_surface_get_alpha_mod,  MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Surface, "alpha_mod=",     mrb_sdl2_video_surface_set_alpha_mod,  MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Surface, "blend_mode",     mrb_sdl2_video_surface_get_blend_mode, MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Surface, "blend_mode=",    mrb_sdl2_video_surface_set_blend_mode, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Surface, "color_mod",      mrb_sdl2_video_surface_get_color_mod,  MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Surface, "color_mod=",     mrb_sdl2_video_surface_set_color_mod,  MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Surface, "palette",        mrb_sdl2_video_surface_set_palette,    MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Surface, "rle",            mrb_sdl2_video_surface_set_rle,        MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Surface, "lock",           mrb_sdl2_video_surface_lock,           MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Surface, "unlock",         mrb_sdl2_video_surface_unlock,         MRB_ARGS_NONE());
 
-  mrb_define_class_method(mrb, class_Surface, "load_bmp", mrb_sdl2_video_surface_load_bmp, ARGS_REQ(1));
-  mrb_define_class_method(mrb, class_Surface, "save_bmp", mrb_sdl2_video_surface_save_bmp, ARGS_REQ(2));
+  mrb_define_class_method(mrb, class_Surface, "load_bmp", mrb_sdl2_video_surface_load_bmp, MRB_ARGS_REQ(1));
+  mrb_define_class_method(mrb, class_Surface, "save_bmp", mrb_sdl2_video_surface_save_bmp, MRB_ARGS_REQ(2));
 }
 
 void

@@ -280,22 +280,22 @@ mruby_sdl2_mouse_init(mrb_state *mrb)
 
   MRB_SET_INSTANCE_TT(class_Cursor, MRB_TT_DATA);
 
-  mrb_define_module_function(mrb, mod_Mouse, "mouse_focus", mrb_sdl2_input_mouse_mouse_focus,  ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Mouse, "mouse_state", mrb_sdl2_input_mouse_mouse_state,  ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Mouse, "location",    mrb_sdl2_input_mouse_get_location, ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Mouse, "x",           mrb_sdl2_input_mouse_get_x,        ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Mouse, "y",           mrb_sdl2_input_mouse_get_y,        ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Mouse, "relative?",   mrb_sdl2_input_mouse_is_relative,  ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Mouse, "relative=",   mrb_sdl2_input_mouse_set_relative, ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Mouse, "cursor",      mrb_sdl2_input_mouse_get_cursor,   ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Mouse, "cursor=",     mrb_sdl2_input_mouse_set_cursor,   ARGS_REQ(1));
-  mrb_define_module_function(mrb, mod_Mouse, "cursor_show", mrb_sdl2_input_mouse_show_cursor,  ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Mouse, "cursor_hide", mrb_sdl2_input_mouse_hide_cursor,  ARGS_NONE());
-  mrb_define_module_function(mrb, mod_Mouse, "warp",        mrb_sdl2_input_mouse_warp,         ARGS_REQ(2));
+  mrb_define_module_function(mrb, mod_Mouse, "mouse_focus", mrb_sdl2_input_mouse_mouse_focus,  MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Mouse, "mouse_state", mrb_sdl2_input_mouse_mouse_state,  MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Mouse, "location",    mrb_sdl2_input_mouse_get_location, MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Mouse, "x",           mrb_sdl2_input_mouse_get_x,        MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Mouse, "y",           mrb_sdl2_input_mouse_get_y,        MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Mouse, "relative?",   mrb_sdl2_input_mouse_is_relative,  MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Mouse, "relative=",   mrb_sdl2_input_mouse_set_relative, MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Mouse, "cursor",      mrb_sdl2_input_mouse_get_cursor,   MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Mouse, "cursor=",     mrb_sdl2_input_mouse_set_cursor,   MRB_ARGS_REQ(1));
+  mrb_define_module_function(mrb, mod_Mouse, "cursor_show", mrb_sdl2_input_mouse_show_cursor,  MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Mouse, "cursor_hide", mrb_sdl2_input_mouse_hide_cursor,  MRB_ARGS_NONE());
+  mrb_define_module_function(mrb, mod_Mouse, "warp",        mrb_sdl2_input_mouse_warp,         MRB_ARGS_REQ(2));
 
-  mrb_define_method(mrb, class_Cursor, "initialize", mrb_sdl2_input_mouse_cursor_initialize, ARGS_REQ(3));
-  mrb_define_method(mrb, class_Cursor, "free",       mrb_sdl2_input_mouse_cursor_free,       ARGS_NONE());
-  mrb_define_method(mrb, class_Cursor, "destroy",    mrb_sdl2_input_mouse_cursor_free,       ARGS_NONE());
+  mrb_define_method(mrb, class_Cursor, "initialize", mrb_sdl2_input_mouse_cursor_initialize, MRB_ARGS_REQ(3));
+  mrb_define_method(mrb, class_Cursor, "free",       mrb_sdl2_input_mouse_cursor_free,       MRB_ARGS_NONE());
+  mrb_define_method(mrb, class_Cursor, "destroy",    mrb_sdl2_input_mouse_cursor_free,       MRB_ARGS_NONE());
 }
 
 void
