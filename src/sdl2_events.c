@@ -518,7 +518,7 @@ typedef struct mrb_sdl2_input_user_data_t {
 static void *
 mrb_sdl2_input_to_voidp(mrb_state *mrb, mrb_value data)
 {
-  mrb_sdl2_input_user_data_t *udata = 
+  mrb_sdl2_input_user_data_t *udata =
     (mrb_sdl2_input_user_data_t*)mrb_malloc(mrb, sizeof(mrb_sdl2_input_user_data_t));
   if (NULL == udata) {
     mrb_raise(mrb, E_RUNTIME_ERROR, "insufficient memory.");
@@ -911,6 +911,11 @@ mruby_sdl2_events_init(mrb_state *mrb)
   mrb_define_const(mrb, mod_Input, "SDL_MOUSEMOTION",              mrb_fixnum_value(SDL_MOUSEMOTION));
   mrb_define_const(mrb, mod_Input, "SDL_MOUSEBUTTONDOWN",          mrb_fixnum_value(SDL_MOUSEBUTTONDOWN));
   mrb_define_const(mrb, mod_Input, "SDL_MOUSEBUTTONUP",            mrb_fixnum_value(SDL_MOUSEBUTTONUP));
+  mrb_define_const(mrb, mod_Input, "SDL_BUTTON_LEFT",              mrb_fixnum_value(SDL_BUTTON_LEFT));
+  mrb_define_const(mrb, mod_Input, "SDL_BUTTON_MIDDLE",            mrb_fixnum_value(SDL_BUTTON_MIDDLE));
+  mrb_define_const(mrb, mod_Input, "SDL_BUTTON_RIGHT",             mrb_fixnum_value(SDL_BUTTON_RIGHT));
+  mrb_define_const(mrb, mod_Input, "SDL_BUTTON_X1",                mrb_fixnum_value(SDL_BUTTON_X1));
+  mrb_define_const(mrb, mod_Input, "SDL_BUTTON_X2",                mrb_fixnum_value(SDL_BUTTON_X2));
   mrb_define_const(mrb, mod_Input, "SDL_MOUSEWHEEL",               mrb_fixnum_value(SDL_MOUSEWHEEL));
   mrb_define_const(mrb, mod_Input, "SDL_JOYAXISMOTION",            mrb_fixnum_value(SDL_JOYAXISMOTION));
   mrb_define_const(mrb, mod_Input, "SDL_JOYBALLMOTION",            mrb_fixnum_value(SDL_JOYBALLMOTION));
@@ -969,4 +974,3 @@ void
 mruby_sdl2_events_final(mrb_state *mrb)
 {
 }
-
