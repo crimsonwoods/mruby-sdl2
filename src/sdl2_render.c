@@ -592,6 +592,18 @@ mrb_sdl2_video_renderer_read_pixels(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+static mrb_value
+mrb_sdl2_video_renderer_set_logical_size(mrb_state *mrb, mrb_value self)
+{
+  SDL_Renderer *renderer = mrb_sdl2_video_renderer_get_ptr(mrb, self);
+  mrb_int w, h;
+  mrb_get_args(mrb, "ii", &w, &h);
+  if (0 != SDL_RenderSetLogicalSize(renderer, w, h)) {
+    mruby_sdl2_raise_error(mrb);
+  }
+  return self;
+}
+
 /***************************************************************************
 *
 * class SDL2::Video::Texture
@@ -913,6 +925,7 @@ mruby_sdl2_video_renderer_init(mrb_state *mrb, struct RClass *mod_Video)
   mrb_define_method(mrb, class_Renderer, "view_port=",       mrb_sdl2_video_renderer_set_view_port,       MRB_ARGS_REQ(1));
   mrb_define_method(mrb, class_Renderer, "present",          mrb_sdl2_video_renderer_present,             MRB_ARGS_NONE());
   mrb_define_method(mrb, class_Renderer, "read_pixels",      mrb_sdl2_video_renderer_read_pixels,         MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, class_Renderer, "set_logical_size", mrb_sdl2_video_renderer_set_logical_size,    MRB_ARGS_REQ(2));
 
   int arena_size = mrb_gc_arena_save(mrb);
 
@@ -980,4 +993,3 @@ void
 mruby_sdl2_video_renderer_final(mrb_state *mrb, struct RClass *mod_Video)
 {
 }
-
